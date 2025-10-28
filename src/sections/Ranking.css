@@ -1,157 +1,41 @@
 body {
-    font-family: 'Poppins', sans-serif;
-    background: radial-gradient(circle at top, #07111F 0%, #0A1E33 80%);
-    color: white;
+    font-family: Arial, sans-serif;
     margin: 0;
-    overflow-x: hidden;
+    background: #fff;
+    color: #000;
 }
 
 .ranking-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    justify-content: center;
-}
-
-.loading {
-    text-align: center;
-    margin-top: 100px;
-    font-size: 18px;
-    color: #bbb;
+    padding: 20px;
 }
 
 .season-select select {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    padding: 10px 15px;
-    border-radius: 12px;
-    color: white;
-    font-size: 14px;
-    outline: none;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    margin-bottom: 30px;
-    backdrop-filter: blur(8px);
+    padding: 5px 10px;
+    margin-bottom: 20px;
 }
 
 .carousel {
     display: flex;
     align-items: center;
-    gap: 15px;
-}
-
-.nav-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    color: white;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-    backdrop-filter: blur(10px);
-}
-
-.nav-btn:hover {
-    background: rgba(255,255,255,0.25);
-}
-
-.nav-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
+    gap: 10px;
 }
 
 .player-card {
-    position: relative;
-    border-radius: 25px;
-    padding: 25px;
-    width: 340px;
-    height: 460px;
-    text-align: center;
-    color: white;
-    overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    transition: transform 0.4s ease, box-shadow 0.3s ease;
-}
-
-.player-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 16px 60px rgba(0,0,0,0.6);
-}
-
-.card-glow {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top, rgba(255,255,255,0.2), transparent 70%);
-    z-index: 0;
-}
-
-.rank-badge {
-    position: absolute;
-    top: 15px;
-    left: 20px;
-    font-size: 26px;
-    font-weight: 900;
-    text-shadow: 0 3px 6px rgba(0,0,0,0.5);
-}
-
-.player-name {
-    font-size: 28px;
-    font-weight: 800;
-    margin-top: 60px;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.4);
-    z-index: 1;
-}
-
-.player-points {
-    font-size: 20px;
-    font-weight: 500;
-    color: #fff;
-    margin-bottom: 20px;
-    z-index: 1;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    width: 300px;
 }
 
 .stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-    z-index: 1;
+    gap: 5px;
 }
 
-.stat-card {
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 8px 0;
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-    background: rgba(255,255,255,0.25);
-    transform: scale(1.05);
-}
-
-.stat-label {
-    display: block;
-    font-size: 12px;
-    color: #ddd;
-}
-
-.stat-value {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-}
-
-.counter {
-    margin-top: 15px;
-    color: #aaa;
-    font-size: 14px;
+button {
+    padding: 5px 10px;
 }
