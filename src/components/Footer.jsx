@@ -12,9 +12,9 @@ const styles = {
     footer: {
         textAlign: "center",
         padding: "20px 0",
-        background: "#111",
         color: "#ccc",
-        marginTop: "50px",
+        background: "rgba(10, 10, 10, 0.4)",
+        backdropFilter: "blur(10px)",
         position: "relative",
         zIndex: 1,
     },
