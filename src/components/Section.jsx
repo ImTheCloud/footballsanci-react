@@ -13,7 +13,8 @@ const styles = {
     container: {
         padding: "100px 20px",
         minHeight: "100vh",
-        background: "#f9f9f9",
+        background: "transparent",
+        color: "inherit",
     },
     title: {
         textAlign: "center",
