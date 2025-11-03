@@ -11,7 +11,7 @@ function Header() {
             <h1 style={styles.logo}>Football Sanci</h1>
             <nav style={styles.nav}>
                 <button onClick={() => scrollTo("ranking")}>Ranking</button>
-                <button onClick={() => scrollTo("history")}>Match History</button>
+                <button onClick={() => scrollTo("history")}>History</button>
                 <button onClick={() => scrollTo("statistics")}>Statistics</button>
                 <button onClick={() => scrollTo("draw")}>Draw</button>
             </nav>
