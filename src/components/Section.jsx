@@ -3,7 +3,7 @@ import React from "react";
 function Section({ title, children }) {
     return (
         <div style={styles.container}>
-            <h2 style={styles.title}>{title}</h2>
+            {title && <h2 style={styles.title}>{title}</h2>}
             <div>{children}</div>
         </div>
     );
@@ -15,6 +15,8 @@ const styles = {
         minHeight: "100vh",
         background: "transparent",
         color: "inherit",
+        zIndex: 1,
+        position: "relative",
     },
     title: {
         textAlign: "center",

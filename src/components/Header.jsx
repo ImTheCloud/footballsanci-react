@@ -8,7 +8,7 @@ function Header() {
 
     return (
         <header style={styles.header}>
-            <h1 style={styles.logo}>⚽ Football Sanci</h1>
+            <h1 style={styles.logo}>Football Sanci</h1>
             <nav style={styles.nav}>
                 <button onClick={() => scrollTo("ranking")}>Ranking</button>
                 <button onClick={() => scrollTo("history")}>Match History</button>

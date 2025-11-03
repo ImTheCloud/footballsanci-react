@@ -15,6 +15,8 @@ const styles = {
         background: "#111",
         color: "#ccc",
         marginTop: "50px",
+        position: "relative",
+        zIndex: 1,
     },
 };
 

@@ -1,15 +1,13 @@
 import React from "react";
+import "./BackgroundFx.css";
 
 function BackgroundFx() {
     return (
-        <div className="app-bg" aria-hidden>
-            <div className="bg-gradient-1"></div>
-            <div className="bg-gradient-2"></div>
-            <div className="bg-gradient-3"></div>
+        <div className="app-bg" aria-hidden="true">
+            <div className="bg-dark"></div>
+            <div className="bg-green-overlay"></div>
         </div>
     );
 }
 
 export default BackgroundFx;
-
-
