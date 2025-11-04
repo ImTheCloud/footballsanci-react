@@ -1,27 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../services/firebase";
+import { useSeason } from "../components/SeasonContext.jsx";
 import "./Ranking.css";
 
 function Ranking() {
-    const [seasons, setSeasons] = useState([]);
-    const [selectedSeason, setSelectedSeason] = useState("");
+    const { selectedSeason } = useSeason();
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedPlayer, setExpandedPlayer] = useState(null);
 
     useEffect(() => {
-        const fetchSeasons = async () => {
-            const snapshot = await getDocs(collection(db, "seasons"));
-            const list = snapshot.docs.map((doc) => doc.id).sort();
-            setSeasons(list);
-            if (list.length > 0) setSelectedSeason(list[list.length - 1]);
-        };
-        fetchSeasons();
-    }, []);
-
-    useEffect(() => {
         if (!selectedSeason) return;
+
         const fetchPlayers = async () => {
             setLoading(true);
             try {
@@ -40,10 +31,7 @@ function Ranking() {
         fetchPlayers();
     }, [selectedSeason]);
 
-    const formatStatValue = (label, value) => {
-        if (label === "Winrate") return `${value}%`;
-        return value;
-    };
+    const formatStatValue = (label, value) => (label === "Winrate" ? `${value}%` : value);
 
     const getRankColor = (rank) => {
         if (rank === 1) return "rank-gold";
@@ -66,18 +54,6 @@ function Ranking() {
     if (loading) {
         return (
             <div className="ranking-container">
-                <div className="ranking-header">
-                    <select
-                        value={selectedSeason}
-                        onChange={(e) => setSelectedSeason(e.target.value)}
-                        className="season-select"
-                        disabled
-                    >
-                        {seasons.map((s) => (
-                            <option key={s} value={s}>{s}</option>
-                        ))}
-                    </select>
-                </div>
                 <div className="loading-state">
                     <div className="loading-spinner"></div>
                     <p>Loading rankings...</p>
@@ -89,17 +65,6 @@ function Ranking() {
     if (players.length === 0) {
         return (
             <div className="ranking-container">
-                <div className="ranking-header">
-                    <select
-                        value={selectedSeason}
-                        onChange={(e) => setSelectedSeason(e.target.value)}
-                        className="season-select"
-                    >
-                        {seasons.map((s) => (
-                            <option key={s} value={s}>{s}</option>
-                        ))}
-                    </select>
-                </div>
                 <div className="empty-state">
                     <p>No players found for this season.</p>
                 </div>
@@ -109,18 +74,6 @@ function Ranking() {
 
     return (
         <div className="ranking-container">
-            <div className="ranking-header">
-                <select
-                    value={selectedSeason}
-                    onChange={(e) => setSelectedSeason(e.target.value)}
-                    className="season-select"
-                >
-                    {seasons.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                    ))}
-                </select>
-            </div>
-
             <div className="ranking-list">
                 {players.map((player) => {
                     const isExpanded = expandedPlayer === player.id;
@@ -149,7 +102,6 @@ function Ranking() {
                                             <span className="points-label">Value</span>
                                         </div>
                                     )}
-
                                 </div>
                             </div>
                             {player.fame && (
@@ -164,7 +116,6 @@ function Ranking() {
                                             ["Wins", player.wins],
                                             ["Losses", player.losses],
                                             ["Draws", player.draws],
-                                            
                                             ["Bonus 5 Goal", player.bonus5goal],
                                         ].map(([label, value], i) => (
                                             <div key={i} className="stat-item">

@@ -1,4 +1,5 @@
 import React from "react";
+import { SeasonProvider } from "./components/SeasonContext.jsx";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import BackgroundFx from "./components/BackgroundFx";
@@ -10,7 +11,7 @@ import Draw from "./sections/Draw";
 
 function App() {
     return (
-        <>
+        <SeasonProvider>
             <BackgroundFx />
             <Header />
             <main style={{ position: "relative", zIndex: 1 }}>
@@ -20,7 +21,7 @@ function App() {
                 <section id="draw"><Draw /></section>
             </main>
             <Footer />
-        </>
+        </SeasonProvider>
     );
 }
 
