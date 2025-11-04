@@ -70,7 +70,7 @@ const styles = {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "12px 30px",
+        padding: "12px 20px", // plus petit padding pour mobile
         color: "#fff",
         background: "rgba(8, 8, 10, 0.5)",
         backdropFilter: "blur(12px)",
@@ -79,6 +79,7 @@ const styles = {
     },
     select: {
         marginLeft: "0",
+        marginRight: "20px", // <- espace entre select et nav
         background: "transparent",
         color: "#fff",
         border: "none",
@@ -92,7 +93,8 @@ const styles = {
         WebkitAppearance: "none",
         MozAppearance: "none",
         position: "relative",
-        backgroundImage: "url('data:image/svg+xml;utf8,<svg fill=\"white\" height=\"10\" viewBox=\"0 0 10 10\" width=\"10\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"0,0 10,0 5,5\"/></svg>')",
+        backgroundImage:
+            "url('data:image/svg+xml;utf8,<svg fill=\"white\" height=\"10\" viewBox=\"0 0 10 10\" width=\"10\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"0,0 10,0 5,5\"/></svg>')",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right 8px center",
         backgroundSize: "10px",
@@ -101,6 +103,8 @@ const styles = {
     nav: {
         display: "flex",
         gap: "18px",
+        overflowX: "auto", // scroll si trop petit écran
+        paddingRight: "10px", // espace à droite pour mobile
     },
     navBtn: {
         background: "transparent",
@@ -110,6 +114,7 @@ const styles = {
         cursor: "pointer",
         transition: "color 0.2s ease, opacity 0.2s ease",
         opacity: 0.8,
+        flexShrink: 0, // éviter que les boutons rétrécissent trop
     },
     activeNavBtn: {
         color: "#10B981", // vert clair pour indiquer la section active
