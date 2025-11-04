@@ -52,8 +52,6 @@ function Header() {
                         key={sec}
                         style={{
                             ...styles.navBtn,
-                            gap: "clamp(8px, 2vw, 18px)",
-                            fontSize: "clamp(0.9rem, 2.2vw, 1.8rem)",
                             ...(activeSection === sec ? styles.activeNavBtn : {}),
                         }}
                         onClick={() => scrollTo(sec)}
@@ -107,12 +105,11 @@ const styles = {
     },
     nav: {
         display: "flex",
-        gap: "clamp(8px, 2vw, 18px)",
-        overflowX: "auto",
-        scrollSnapType: "x mandatory",
-        paddingRight: "20px",
-        scrollPaddingRight: "20px",
-        whiteSpace: "nowrap",
+        justifyContent: "flex-start",
+        gap: "0.5rem",
+        flexShrink: 0,
+        overflow: "visible",
+        minWidth: 0,
     },
     navBtn: {
         background: "transparent",
@@ -123,7 +120,10 @@ const styles = {
         transition: "color 0.2s ease, opacity 0.2s ease",
         opacity: 0.8,
         flexShrink: 0,
-        fontSize: "clamp(0.9rem, 2.2vw, 1.8rem)",
+        minWidth: "40px", // minimum width to shrink on mobile
+        fontSize: "clamp(0.85rem, 2.5vw, 1.1rem)", // dynamic font size
+        padding: "4px 6px",
+        whiteSpace: "nowrap",
     },
     activeNavBtn: {
         color: "#10B981",
