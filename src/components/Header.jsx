@@ -109,7 +109,7 @@ const styles = {
         color: "transparent",
         border: "none",
         borderRadius: "8px",
-        padding: "8px 0px 8px 0px",
+        padding: "12px 0px 12px 0px",
         fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
         fontWeight: 500,
         outline: "none",
