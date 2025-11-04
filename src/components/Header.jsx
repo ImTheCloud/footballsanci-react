@@ -11,7 +11,6 @@ function Header() {
         setActiveSection(id);
     };
 
-    // Detect scroll to highlight current section
     useEffect(() => {
         const sections = ["ranking", "history", "statistics", "draw"];
         const handleScroll = () => {
@@ -30,25 +29,29 @@ function Header() {
 
     return (
         <header style={styles.header}>
-            {/* Season Selector */}
-            <select
-                style={styles.select}
-                value={selectedSeason}
-                onChange={(e) => setSelectedSeason(e.target.value)}
-                disabled={loadingSeasons}
-            >
-                {seasons.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                ))}
-            </select>
+            {/* Season Selector à gauche */}
+            <div style={{ display: "flex", alignItems: "center", paddingLeft: 0, marginLeft: 0 }}>
+                <select
+                    style={styles.select}
+                    value={selectedSeason}
+                    onChange={(e) => setSelectedSeason(e.target.value)}
+                    disabled={loadingSeasons}
+                >
+                    {seasons.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                    ))}
+                </select>
+            </div>
 
-            {/* Navigation */}
+            {/* Navigation à droite */}
             <nav style={styles.nav}>
                 {["ranking", "history", "statistics", "draw"].map((sec) => (
                     <button
                         key={sec}
                         style={{
                             ...styles.navBtn,
+                            gap: "clamp(8px, 2vw, 18px)",
+                            fontSize: "clamp(0.9rem, 2.2vw, 1.8rem)",
                             ...(activeSection === sec ? styles.activeNavBtn : {}),
                         }}
                         onClick={() => scrollTo(sec)}
@@ -70,7 +73,7 @@ const styles = {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "12px 20px", // plus petit padding pour mobile
+        padding: "12px 0px", // pas de padding gauche/droite
         color: "#fff",
         background: "rgba(8, 8, 10, 0.5)",
         backdropFilter: "blur(12px)",
@@ -78,14 +81,14 @@ const styles = {
         zIndex: 1000,
     },
     select: {
-        marginLeft: "0",
-        marginRight: "20px", // <- espace entre select et nav
+        marginLeft: "0px",
+        marginRight: "20px",
         background: "transparent",
         color: "#fff",
         border: "none",
         borderRadius: "8px",
-        padding: "8px 24px 8px 8px",
-        fontSize: "1rem",
+        padding: "8px 24px 8px 15px", // léger espace à gauche
+        fontSize: "1.1rem",
         fontWeight: 500,
         outline: "none",
         cursor: "pointer",
@@ -93,8 +96,6 @@ const styles = {
         WebkitAppearance: "none",
         MozAppearance: "none",
         position: "relative",
-        backgroundImage:
-            "url('data:image/svg+xml;utf8,<svg fill=\"white\" height=\"10\" viewBox=\"0 0 10 10\" width=\"10\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"0,0 10,0 5,5\"/></svg>')",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right 8px center",
         backgroundSize: "10px",
@@ -102,9 +103,11 @@ const styles = {
     },
     nav: {
         display: "flex",
-        gap: "18px",
-        overflowX: "auto", // scroll si trop petit écran
-        paddingRight: "10px", // espace à droite pour mobile
+        gap: "clamp(8px, 2vw, 18px)",
+        overflowX: "auto",
+        scrollSnapType: "x mandatory",
+        paddingRight: "5px",
+        whiteSpace: "nowrap",
     },
     navBtn: {
         background: "transparent",
@@ -114,10 +117,11 @@ const styles = {
         cursor: "pointer",
         transition: "color 0.2s ease, opacity 0.2s ease",
         opacity: 0.8,
-        flexShrink: 0, // éviter que les boutons rétrécissent trop
+        flexShrink: 0,
+        fontSize: "clamp(0.9rem, 2.2vw, 1.8rem)",
     },
     activeNavBtn: {
-        color: "#10B981", // vert clair pour indiquer la section active
+        color: "#10B981",
         opacity: 1,
         fontWeight: 600,
     },
