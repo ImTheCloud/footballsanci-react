@@ -1,4 +1,3 @@
-/* Ranking Container */
 .ranking-container {
     position: relative;
     width: 100%;
@@ -8,7 +7,6 @@
     box-sizing: border-box;
 }
 
-/* Header Section */
 .ranking-header {
     margin-bottom: 1.5rem;
     display: flex;
@@ -40,28 +38,21 @@
     background: rgba(6, 78, 59, 0.35);
 }
 
-.season-select:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .season-select option {
     background: #0a0a0a;
     color: #fff;
     padding: 0.5rem;
 }
 
-/* Ranking List */
 .ranking-list {
     width: 100%;
-    max-width: 600px; /* limite la largeur sur tous les écrans */
-    margin: 0 auto;   /* centre la liste */
+    max-width: 600px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-/* Ranking Item */
 .ranking-item {
     background: rgba(10, 10, 10, 0.6);
     border: 1px solid rgba(16, 185, 129, 0.15);
@@ -75,26 +66,15 @@
     overflow: hidden;
 }
 
-.ranking-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    background: rgba(16, 185, 129, 0.3);
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
-}
-
-.ranking-item:hover {
-    background: rgba(10, 10, 10, 0.8);
-    border-color: rgba(16, 185, 129, 0.3);
-    transform: translateX(2px);
-}
-
 .ranking-item:hover::before {
     transform: scaleY(1);
+}
+
+/* Stronger hover effect for non-rank-specific .ranking-item */
+.ranking-item:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(6, 78, 59, 0.25);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
 .ranking-item.expanded {
@@ -106,51 +86,55 @@
     background: rgba(16, 185, 129, 0.6);
     transform: scaleY(1);
 }
-
 /* Rank Colors */
 .ranking-item.rank-gold {
-    border-color: rgba(251, 191, 36, 0.3);
-    background: rgba(251, 191, 36, 0.05);
+    border-color: rgba(251, 191, 36, 0.6);
+    background: rgba(251, 191, 36, 0.12);
 }
 
 .ranking-item.rank-gold:hover {
-    border-color: rgba(251, 191, 36, 0.5);
-    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.9);
+    background: rgba(251, 191, 36, 0.25);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
 }
 
 .ranking-item.rank-gold .rank-badge {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(217, 119, 6, 0.3));
-    border-color: rgba(251, 191, 36, 0.5);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(217, 119, 6, 0.5));
+    border-color: rgba(251, 191, 36, 0.7);
 }
 
+/* Silver */
 .ranking-item.rank-silver {
-    border-color: rgba(203, 213, 225, 0.3);
-    background: rgba(203, 213, 225, 0.05);
+    border-color: rgba(203, 213, 225, 0.6);
+    background: rgba(203, 213, 225, 0.12);
 }
 
 .ranking-item.rank-silver:hover {
-    border-color: rgba(203, 213, 225, 0.5);
-    background: rgba(203, 213, 225, 0.1);
+    border-color: rgba(203, 213, 225, 0.9);
+    background: rgba(203, 213, 225, 0.25);
+    box-shadow: 0 0 20px rgba(203, 213, 225, 0.4);
 }
 
 .ranking-item.rank-silver .rank-badge {
-    background: linear-gradient(135deg, rgba(203, 213, 225, 0.3), rgba(148, 163, 184, 0.3));
-    border-color: rgba(203, 213, 225, 0.5);
+    background: linear-gradient(135deg, rgba(203, 213, 225, 0.4), rgba(148, 163, 184, 0.5));
+    border-color: rgba(203, 213, 225, 0.7);
 }
 
+/* Bronze */
 .ranking-item.rank-bronze {
-    border-color: rgba(217, 119, 6, 0.3);
-    background: rgba(217, 119, 6, 0.05);
+    border-color: rgba(217, 119, 6, 0.6);
+    background: rgba(217, 119, 6, 0.12);
 }
 
 .ranking-item.rank-bronze:hover {
-    border-color: rgba(217, 119, 6, 0.5);
-    background: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.9);
+    background: rgba(217, 119, 6, 0.25);
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.4);
 }
 
 .ranking-item.rank-bronze .rank-badge {
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.3), rgba(180, 83, 9, 0.3));
-    border-color: rgba(217, 119, 6, 0.5);
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.4), rgba(180, 83, 9, 0.5));
+    border-color: rgba(217, 119, 6, 0.7);
 }
 
 .ranking-item-main {
@@ -279,14 +263,6 @@
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}
-
-/* Ranking Item Details (Expanded) */
-.ranking-item-details {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(16, 185, 129, 0.2);
-    animation: slideDown 0.3s ease;
 }
 
 @keyframes slideDown {
