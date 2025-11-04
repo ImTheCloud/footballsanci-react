@@ -52,6 +52,13 @@ function Ranking() {
         return "rank-default";
     };
 
+    const getPointsColorClass = (rank) => {
+        if (rank === 1) return "rank-gold";
+        if (rank === 2) return "rank-silver";
+        if (rank === 3) return "rank-bronze";
+        return "";
+    };
+
     const togglePlayerExpansion = (playerId) => {
         setExpandedPlayer(expandedPlayer === playerId ? null : playerId);
     };
@@ -115,7 +122,7 @@ function Ranking() {
             </div>
 
             <div className="ranking-list">
-                {players.map((player, index) => {
+                {players.map((player) => {
                     const isExpanded = expandedPlayer === player.id;
                     return (
                         <div
@@ -129,24 +136,25 @@ function Ranking() {
                                 </div>
                                 <div className="player-info">
                                     <h3 className="player-name">{player.name}</h3>
-                                    {player.fame && (
-                                        <p className="player-fame">"{player.fame}"</p>
-                                    )}
                                 </div>
+
                                 <div className="player-points">
                                     <div className="points-group">
-                                        <span className="points-value">{player.points || 0}</span>
+                                        <span className={`points-value ${getPointsColorClass(player.rank)}`}>{player.points || 0}</span>
                                         <span className="points-label">Points</span>
                                     </div>
                                     {player.value !== undefined && (
                                         <div className="value-group">
-                                            <span className="points-value">{player.value}</span>
+                                            <span className={`points-value ${getPointsColorClass(player.rank)}`}>{player.value}</span>
                                             <span className="points-label">Value</span>
                                         </div>
                                     )}
+
                                 </div>
                             </div>
-
+                            {player.fame && (
+                                <p className="player-fame">❝ {player.fame}❞</p>
+                            )}
                             {isExpanded && (
                                 <div className="ranking-item-details">
                                     <div className="stats-grid">
