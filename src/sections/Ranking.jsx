@@ -105,7 +105,7 @@ function Ranking() {
                                 </div>
                             </div>
                             {player.fame && (
-                                <p className="player-fame">❝ {player.fame}❞</p>
+                                <p className="player-fame">❝ {player.fame} ❞</p>
                             )}
                             {isExpanded && (
                                 <div className="ranking-item-details">

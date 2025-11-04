@@ -57,7 +57,7 @@
     background: rgba(10, 10, 10, 0.6);
     border: 1px solid rgba(16, 185, 129, 0.15);
     border-radius: 0.75rem;
-    padding: 1rem;
+    padding: 0.6rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
@@ -169,8 +169,8 @@
 /* Rank Badge */
 .rank-badge {
     flex-shrink: 0;
-    width: 3rem;
-    height: 3rem;
+    width: 2.25rem;
+    height: 2.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -181,7 +181,7 @@
 }
 
 .rank-number {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #fff;
     line-height: 1;
@@ -198,7 +198,7 @@
 
 .player-name {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #fff;
     line-height: 1.3;
@@ -210,9 +210,11 @@
 .player-fame {
     font-style: italic;
     color: #f0f0f0;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
     line-height: 1.4;
+    padding-top: 0.25rem;
 }
 
 .player-points {
@@ -220,8 +222,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 1.5rem;
-    padding: 0.25rem 0.5rem;
+    gap: 1rem;
+    padding: 0.15rem 0.35rem;
     border-radius: 0.5rem;
     transition: all 0.3s ease;
 }
@@ -250,7 +252,7 @@
 }
 
 .points-value {
-    font-size: 1.35rem; /* légèrement plus grand pour mettre en avant */
+    font-size: 1.1rem; /* légèrement plus grand pour mettre en avant */
     font-weight: 700;
     color: rgba(16, 185, 129, 1);
     line-height: 1.1;
@@ -258,7 +260,7 @@
 }
 
 .points-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
@@ -280,14 +282,14 @@
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .stat-item {
     background: rgba(6, 78, 59, 0.15);
     border: 1px solid rgba(16, 185, 129, 0.2);
     border-radius: 0.5rem;
-    padding: 0.75rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -308,7 +310,7 @@
 }
 
 .stat-value {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 700;
     color: #fff;
     line-height: 1.2;
@@ -481,4 +483,18 @@
 .season-select:focus-visible {
     outline: 2px solid rgba(16, 185, 129, 0.6);
     outline-offset: 2px;
+}
+.ranking-item.rank-gold .stat-item {
+    border-color: rgba(251, 191, 36, 0.6);
+    background: rgba(251, 191, 36, 0.12);
+}
+
+.ranking-item.rank-silver .stat-item {
+    border-color: rgba(203, 213, 225, 0.6);
+    background: rgba(203, 213, 225, 0.12);
+}
+
+.ranking-item.rank-bronze .stat-item {
+    border-color: rgba(217, 119, 6, 0.6);
+    background: rgba(217, 119, 6, 0.12);
 }
