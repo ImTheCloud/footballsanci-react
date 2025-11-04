@@ -89,7 +89,7 @@ const styles = {
         border: "none",
         borderRadius: "8px",
         padding: "8px 35px 8px 15px",
-        fontSize: "1.1rem",
+        fontSize: "clamp(0.75rem, 2.2vw, 1.1rem)",
         fontWeight: 500,
         outline: "none",
         cursor: "pointer",
@@ -105,11 +105,9 @@ const styles = {
     },
     nav: {
         display: "flex",
-        justifyContent: "flex-start",
         gap: "0.5rem",
+        justifyContent: "flex-end", // aligne tous les boutons à droite
         flexShrink: 0,
-        overflow: "visible",
-        minWidth: 0,
     },
     navBtn: {
         background: "transparent",
@@ -120,9 +118,9 @@ const styles = {
         transition: "color 0.2s ease, opacity 0.2s ease",
         opacity: 0.8,
         flexShrink: 0,
-        minWidth: "40px", // minimum width to shrink on mobile
-        fontSize: "clamp(0.85rem, 2.5vw, 1.1rem)", // dynamic font size
-        padding: "4px 6px",
+        minWidth: "20px",
+        fontSize: "clamp(0.75rem, 2.2vw, 1.1rem)",
+        padding: "4px 2px",
         whiteSpace: "nowrap",
     },
     activeNavBtn: {
