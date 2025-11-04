@@ -31,16 +31,18 @@ function Header() {
         <header style={styles.header}>
             {/* Season Selector à gauche */}
             <div style={{ display: "flex", alignItems: "center", paddingLeft: 0, marginLeft: 0 }}>
-                <select
-                    style={styles.select}
-                    value={selectedSeason}
-                    onChange={(e) => setSelectedSeason(e.target.value)}
-                    disabled={loadingSeasons}
-                >
-                    {seasons.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                    ))}
-                </select>
+                <div style={{ position: "relative" }}>
+                    <select
+                        style={styles.select}
+                        value={selectedSeason}
+                        onChange={(e) => setSelectedSeason(e.target.value)}
+                        disabled={loadingSeasons}
+                    >
+                        {seasons.map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {/* Navigation à droite */}
@@ -74,6 +76,7 @@ const styles = {
         justifyContent: "space-between",
         alignItems: "center",
         padding: "12px 0px", // pas de padding gauche/droite
+        paddingInline: "10px",
         color: "#fff",
         background: "rgba(8, 8, 10, 0.5)",
         backdropFilter: "blur(12px)",
@@ -87,7 +90,7 @@ const styles = {
         color: "#fff",
         border: "none",
         borderRadius: "8px",
-        padding: "8px 24px 8px 15px", // léger espace à gauche
+        padding: "8px 35px 8px 15px",
         fontSize: "1.1rem",
         fontWeight: 500,
         outline: "none",
@@ -96,9 +99,10 @@ const styles = {
         WebkitAppearance: "none",
         MozAppearance: "none",
         position: "relative",
+        backgroundImage: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 6\" fill=\"white\"><path d=\"M0 0l5 6 5-6H0z\"/></svg>')",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "right 8px center",
-        backgroundSize: "10px",
+        backgroundPosition: "right 10px center",
+        backgroundSize: "10px 6px",
         transition: "opacity 0.2s ease",
     },
     nav: {
@@ -106,7 +110,8 @@ const styles = {
         gap: "clamp(8px, 2vw, 18px)",
         overflowX: "auto",
         scrollSnapType: "x mandatory",
-        paddingRight: "5px",
+        paddingRight: "20px",
+        scrollPaddingRight: "20px",
         whiteSpace: "nowrap",
     },
     navBtn: {
