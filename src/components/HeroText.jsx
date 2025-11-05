@@ -14,7 +14,7 @@ const styles = {
         fontSize: "32px",
         fontWeight: "600",
         color: "white",
-        paddingTop: "40px",
+        paddingTop: "50px",
         paddingBottom: "10px",
         fontFamily: "'Rale way', sans-serif",
         letterSpacing: "1.5px",
