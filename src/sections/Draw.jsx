@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useSeason } from "../components/SeasonContext.jsx";
 import "./Draw.css";
@@ -11,22 +11,57 @@ function Draw() {
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Match details state
+    const [matchDetails, setMatchDetails] = useState({
+        date: new Date().toISOString().split('T')[0],
+        time: '21:00',
+        location: 'Fit Five',
+        duration: '1h'
+    });
+
     useEffect(() => {
         if (!selectedSeason) return;
 
-        const fetchPlayers = async () => {
+        const fetchData = async () => {
             setLoading(true);
             try {
-                const snapshot = await getDocs(collection(db, `seasons/${selectedSeason}/players`));
-                const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setPlayers(list);
+                // Fetch players
+                const playersSnapshot = await getDocs(collection(db, `seasons/${selectedSeason}/players`));
+                const playersList = playersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setPlayers(playersList);
+
+                // Fetch last match
+                const matchesQuery = query(
+                    collection(db, `seasons/matches`),
+                    orderBy('createdAt', 'desc'),
+                    limit(1)
+                );
+                const matchesSnapshot = await getDocs(matchesQuery);
+
+                if (!matchesSnapshot.empty) {
+                    const lastMatch = matchesSnapshot.docs[0].data();
+                    // Only show last match if it's for the current season
+                    if (lastMatch.seasonId === selectedSeason) {
+                        setTeams([lastMatch.team1, lastMatch.team2]);
+                        setMatchDetails({
+                            date: lastMatch.date,
+                            time: lastMatch.time,
+                            location: lastMatch.location,
+                            duration: lastMatch.duration
+                        });
+
+                        // Set selected players based on last match
+                        const allPlayers = [...lastMatch.team1, ...lastMatch.team2];
+                        setSelectedPlayers(allPlayers);
+                    }
+                }
             } catch (e) {
-                console.error("Error loading players:", e);
+                console.error("Error loading data:", e);
             } finally {
                 setLoading(false);
             }
         };
-        fetchPlayers();
+        fetchData();
     }, [selectedSeason]);
 
     const togglePlayerSelection = (player) => {
@@ -38,21 +73,81 @@ function Draw() {
         });
     };
 
-    const generateTeams = () => {
+    const generateBalancedTeams = (playersList) => {
+        const MAX_DIFFERENCE = 1.5;
+        let bestTeam1 = [];
+        let bestTeam2 = [];
+        let bestDifference = Infinity;
+
+        const attempts = playersList.length <= 10 ? 1000 : 500;
+
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            let shuffled = [...playersList].sort(() => Math.random() - 0.5);
+            let team1 = [];
+            let team2 = [];
+
+            shuffled.forEach((player, index) => {
+                if (index % 2 === 0) {
+                    team1.push(player);
+                } else {
+                    team2.push(player);
+                }
+            });
+
+            const total1 = team1.reduce((sum, p) => sum + p.value, 0);
+            const total2 = team2.reduce((sum, p) => sum + p.value, 0);
+            const difference = Math.abs(total1 - total2);
+
+            if (difference <= MAX_DIFFERENCE) {
+                return [team1, team2];
+            }
+
+            if (difference < bestDifference) {
+                bestDifference = difference;
+                bestTeam1 = [...team1];
+                bestTeam2 = [...team2];
+            }
+        }
+
+        return [bestTeam1, bestTeam2];
+    };
+
+    const generateTeams = async () => {
         if (selectedPlayers.length < 2) return;
 
-        let shuffled = [...selectedPlayers].sort(() => Math.random() - 0.5);
-        let team1 = [], team2 = [];
-
-        shuffled.forEach((player, index) => {
-            if (index % 2 === 0) {
-                team1.push(player);
-            } else {
-                team2.push(player);
-            }
-        });
-
+        const [team1, team2] = generateBalancedTeams(selectedPlayers);
         setTeams([team1, team2]);
+
+        // Save match to Firebase
+        try {
+            await addDoc(collection(db, `seasons/matches`), {
+                seasonId: selectedSeason,
+                team1: team1,
+                team2: team2,
+                date: matchDetails.date,
+                time: matchDetails.time,
+                location: matchDetails.location,
+                duration: matchDetails.duration,
+                createdAt: new Date().toISOString()
+            });
+            console.log("Match saved successfully!");
+        } catch (error) {
+            console.error("Error saving match:", error);
+        }
+    };
+
+    const calculateDifference = () => {
+        if (teams.length !== 2) return 0;
+        const total1 = teams[0].reduce((sum, p) => sum + p.value, 0);
+        const total2 = teams[1].reduce((sum, p) => sum + p.value, 0);
+        return Math.abs(total1 - total2);
+    };
+
+    const handleMatchDetailsChange = (field, value) => {
+        setMatchDetails(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
 
     if (loading) {
@@ -77,8 +172,57 @@ function Draw() {
         );
     }
 
+    const difference = calculateDifference();
+
     return (
         <div className="draw-container">
+            {/* Section Title */}
+            <h1 className="section-title">Live Draw</h1>
+
+            {/* Match Details Form */}
+            <div className="match-details-form">
+                <div className="form-group">
+                    <label htmlFor="match-date">Date</label>
+                    <input
+                        id="match-date"
+                        type="date"
+                        value={matchDetails.date}
+                        onChange={(e) => handleMatchDetailsChange('date', e.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="match-time">Time</label>
+                    <input
+                        id="match-time"
+                        type="time"
+                        value={matchDetails.time}
+                        onChange={(e) => handleMatchDetailsChange('time', e.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="match-location">Location</label>
+                    <select
+                        id="match-location"
+                        value={matchDetails.location}
+                        onChange={(e) => handleMatchDetailsChange('location', e.target.value)}
+                    >
+                        <option value="Fit Five">Fit Five</option>
+                        <option value="Halle">Halle</option>
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="match-duration">Duration</label>
+                    <select
+                        id="match-duration"
+                        value={matchDetails.duration}
+                        onChange={(e) => handleMatchDetailsChange('duration', e.target.value)}
+                    >
+                        <option value="1h">1h</option>
+                        <option value="1h30">1h30</option>
+                    </select>
+                </div>
+            </div>
+
             {/* Players Selection Grid */}
             <div className="players-grid">
                 {players.map(player => {
@@ -88,11 +232,8 @@ function Draw() {
                             key={player.id}
                             className={`player-card ${isSelected ? 'selected' : ''}`}
                             onClick={() => togglePlayerSelection(player)}
-                            onBlur={(e) => {
-                                // Force re-render of the button style when deselected
-                                if (!isSelected) {
-                                    e.currentTarget.blur();
-                                }
+                            onTouchEnd={(e) => {
+                                e.currentTarget.blur();
                             }}
                         >
                             <h4 className="player-card-name">{player.name}</h4>
@@ -104,53 +245,63 @@ function Draw() {
 
             {/* Generate Teams Section */}
             <div className="generate-section">
+                <div className="selected-counter">
+                    <span className="selected-counter-number">{selectedPlayers.length}</span> / {players.length} players selected
+                </div>
                 <button
                     className="generate-button"
                     onClick={generateTeams}
                     disabled={selectedPlayers.length < 2}
                 >
                     Generate Teams
-                    {selectedPlayers.length > 0 && (
-                        <span className="selected-count">{selectedPlayers.length}</span>
-                    )}
                 </button>
             </div>
 
             {/* Teams Display */}
             {teams.length === 2 && (
-                <div className="teams-container">
-                    <div className="team-card team-1">
-                        <div className="team-header">
-                            <h3 className="team-title">Team 1</h3>
-                            <div className="team-total">
-                                {teams[0].reduce((sum, p) => sum + p.value, 0).toFixed(2)}
-                            </div>
-                        </div>
-                        <ul className="team-players">
-                            {teams[0].map(p => (
-                                <li key={p.id} className="team-player-item">
-                                    <span className="team-player-name">{p.name}</span>
-                                    <span className="team-player-value">{p.value}</span>
-                                </li>
-                            ))}
-                        </ul>
+                <div className="teams-wrapper">
+                    {/* Teams Balance Info - Above teams */}
+                    <div className="teams-balance-info">
+                        <span className="balance-label">Gap:</span>
+                        <span className={`balance-value ${difference <= 1.5 ? 'balanced' : 'warning'}`}>
+                            {difference.toFixed(2)}
+                        </span>
                     </div>
 
-                    <div className="team-card team-2">
-                        <div className="team-header">
-                            <h3 className="team-title">Team 2</h3>
-                            <div className="team-total">
-                                {teams[1].reduce((sum, p) => sum + p.value, 0).toFixed(2)}
+                    <div className="teams-container">
+                        <div className="team-card team-1">
+                            <div className="team-header">
+                                <h3 className="team-title">Team 1</h3>
+                                <div className="team-total">
+                                    {teams[0].reduce((sum, p) => sum + p.value, 0).toFixed(2)}
+                                </div>
                             </div>
+                            <ul className="team-players">
+                                {teams[0].map(p => (
+                                    <li key={p.id} className="team-player-item">
+                                        <span className="team-player-name">{p.name}</span>
+                                        <span className="team-player-value">{p.value}</span>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                        <ul className="team-players">
-                            {teams[1].map(p => (
-                                <li key={p.id} className="team-player-item">
-                                    <span className="team-player-name">{p.name}</span>
-                                    <span className="team-player-value">{p.value}</span>
-                                </li>
-                            ))}
-                        </ul>
+
+                        <div className="team-card team-2">
+                            <div className="team-header">
+                                <h3 className="team-title">Team 2</h3>
+                                <div className="team-total">
+                                    {teams[1].reduce((sum, p) => sum + p.value, 0).toFixed(2)}
+                                </div>
+                            </div>
+                            <ul className="team-players">
+                                {teams[1].map(p => (
+                                    <li key={p.id} className="team-player-item">
+                                        <span className="team-player-name">{p.name}</span>
+                                        <span className="team-player-value">{p.value}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             )}

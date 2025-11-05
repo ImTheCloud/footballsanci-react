@@ -12,7 +12,8 @@ function Header() {
     };
 
     useEffect(() => {
-        const sections = ["ranking", "history", "statistics", "draw"];
+        // ✅ "draw" est maintenant avant "statistics"
+        const sections = ["ranking", "history", "draw", "statistics"];
         const handleScroll = () => {
             const scrollPos = window.scrollY + 80; // offset pour le header
             for (let i = sections.length - 1; i >= 0; i--) {
@@ -27,7 +28,6 @@ function Header() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Fonction pour obtenir le texte raccourci comme "S1" à partir de la saison sélectionnée
     const getShortLabel = (season) => {
         const match = season.match(/\d+/);
         return match ? `S${match[0]}` : season;
@@ -50,8 +50,8 @@ function Header() {
                     ))}
                 </select>
 
-                {/* Navigation buttons très proches */}
-                {["ranking", "history", "statistics", "draw"].map((sec) => (
+                {/* ✅ "draw" avant "statistics" ici aussi */}
+                {["ranking", "history", "draw", "statistics"].map((sec) => (
                     <button
                         key={sec}
                         style={{
@@ -87,7 +87,7 @@ const styles = {
     leftContainer: {
         display: "flex",
         alignItems: "center",
-        gap: "0.3rem", // un peu plus d'espace
+        gap: "0.3rem",
         margin: 0,
         padding: 0,
         position: "relative",
@@ -117,9 +117,10 @@ const styles = {
         appearance: "none",
         WebkitAppearance: "none",
         MozAppearance: "none",
-        backgroundImage: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 6\" fill=\"white\"><path d=\"M0 0l5 6 5-6H0z\"/></svg>')",
+        backgroundImage:
+            "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 6\" fill=\"white\"><path d=\"M0 0l5 6 5-6H0z\"/></svg>')",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "left 40px center", // flèche un peu plus à droite
+        backgroundPosition: "left 40px center",
         backgroundSize: "10px 6px",
         transition: "opacity 0.2s ease",
     },
@@ -131,8 +132,8 @@ const styles = {
         cursor: "pointer",
         transition: "color 0.2s ease, opacity 0.2s ease",
         opacity: 0.8,
-        minWidth: "22px", // légèrement plus large
-        fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)", // légèrement plus grand
+        minWidth: "22px",
+        fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
         fontWeight: 500,
         padding: "4px 6px",
         whiteSpace: "nowrap",
@@ -143,4 +144,5 @@ const styles = {
         fontWeight: 600,
     },
 };
+
 export default Header;
