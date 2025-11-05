@@ -1,4 +1,5 @@
 import React from "react";
+import { AuthProvider } from "./components/AuthContext.jsx";
 import { SeasonProvider } from "./components/SeasonContext.jsx";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -11,17 +12,19 @@ import Draw from "./sections/Draw";
 
 function App() {
     return (
-        <SeasonProvider>
-            <BackgroundFx />
-            <Header />
-            <main style={{ position: "relative", zIndex: 1 }}>
-                <section id="ranking"><Ranking /></section>
-                <section id="history"><History /></section>
-                <section id="draw"><Draw /></section>
-                <section id="statistics"><Statistics /></section>
-            </main>
-            <Footer />
-        </SeasonProvider>
+        <AuthProvider>
+            <SeasonProvider>
+                <BackgroundFx />
+                <Header />
+                <main style={{ position: "relative", zIndex: 1 }}>
+                    <section id="ranking"><Ranking /></section>
+                    <section id="history"><History /></section>
+                    <section id="draw"><Draw /></section>
+                    <section id="statistics"><Statistics /></section>
+                </main>
+                <Footer />
+            </SeasonProvider>
+        </AuthProvider>
     );
 }
 

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, addDoc, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useSeason } from "../components/SeasonContext.jsx";
+import { useAuth } from "../components/AuthContext.jsx";
 import "./Draw.css";
 
 function Draw() {
     const { selectedSeason } = useSeason();
+    const { currentUser } = useAuth(); // Get current user
     const [players, setPlayers] = useState([]);
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [teams, setTeams] = useState([]);
@@ -25,17 +27,19 @@ function Draw() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch players
-                const playersSnapshot = await getDocs(collection(db, `seasons/${selectedSeason}/players`));
-                const playersList = playersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setPlayers(playersList);
+                // Fetch players (only if authenticated)
+                if (currentUser) {
+                    const playersSnapshot = await getDocs(collection(db, `seasons/${selectedSeason}/players`));
+                    const playersList = playersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setPlayers(playersList);
+                }
 
-                // Fetch last match
                 const matchesQuery = query(
-                    collection(db, `seasons/matches`),
+                    collection(db, `seasons/${selectedSeason}/matches`),
                     orderBy('createdAt', 'desc'),
                     limit(1)
                 );
+
                 const matchesSnapshot = await getDocs(matchesQuery);
 
                 if (!matchesSnapshot.empty) {
@@ -50,9 +54,11 @@ function Draw() {
                             duration: lastMatch.duration
                         });
 
-                        // Set selected players based on last match
-                        const allPlayers = [...lastMatch.team1, ...lastMatch.team2];
-                        setSelectedPlayers(allPlayers);
+                        // Set selected players based on last match (only if authenticated)
+                        if (currentUser) {
+                            const allPlayers = [...lastMatch.team1, ...lastMatch.team2];
+                            setSelectedPlayers(allPlayers);
+                        }
                     }
                 }
             } catch (e) {
@@ -62,7 +68,7 @@ function Draw() {
             }
         };
         fetchData();
-    }, [selectedSeason]);
+    }, [selectedSeason, currentUser]);
 
     const togglePlayerSelection = (player) => {
         setSelectedPlayers(prev => {
@@ -120,7 +126,7 @@ function Draw() {
 
         // Save match to Firebase
         try {
-            await addDoc(collection(db, `seasons/matches`), {
+            await addDoc(collection(db, `seasons/${selectedSeason}/matches`), {
                 seasonId: selectedSeason,
                 team1: team1,
                 team2: team2,
@@ -155,18 +161,7 @@ function Draw() {
             <div className="draw-container">
                 <div className="loading-state">
                     <div className="loading-spinner"></div>
-                    <p>Loading players...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (players.length === 0) {
-        return (
-            <div className="draw-container">
-                <div className="empty-state">
-                    <div className="empty-state-icon">⚽</div>
-                    <p>No players found for this season.</p>
+                    <p>Loading...</p>
                 </div>
             </div>
         );
@@ -179,85 +174,91 @@ function Draw() {
             {/* Section Title */}
             <h1 className="section-title">Live Draw</h1>
 
-            {/* Match Details Form */}
-            <div className="match-details-form">
-                <div className="form-group">
-                    <label htmlFor="match-date">Date</label>
-                    <input
-                        id="match-date"
-                        type="date"
-                        value={matchDetails.date}
-                        onChange={(e) => handleMatchDetailsChange('date', e.target.value)}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="match-time">Time</label>
-                    <input
-                        id="match-time"
-                        type="time"
-                        value={matchDetails.time}
-                        onChange={(e) => handleMatchDetailsChange('time', e.target.value)}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="match-location">Location</label>
-                    <select
-                        id="match-location"
-                        value={matchDetails.location}
-                        onChange={(e) => handleMatchDetailsChange('location', e.target.value)}
-                    >
-                        <option value="Fit Five">Fit Five</option>
-                        <option value="Halle">Halle</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="match-duration">Duration</label>
-                    <select
-                        id="match-duration"
-                        value={matchDetails.duration}
-                        onChange={(e) => handleMatchDetailsChange('duration', e.target.value)}
-                    >
-                        <option value="1h">1h</option>
-                        <option value="1h30">1h30</option>
-                    </select>
-                </div>
-            </div>
-
-            {/* Players Selection Grid */}
-            <div className="players-grid">
-                {players.map(player => {
-                    const isSelected = selectedPlayers.find(p => p.id === player.id);
-                    return (
-                        <button
-                            key={player.id}
-                            className={`player-card ${isSelected ? 'selected' : ''}`}
-                            onClick={() => togglePlayerSelection(player)}
-                            onTouchEnd={(e) => {
-                                e.currentTarget.blur();
-                            }}
+            {/* Match Details Form - Only visible if authenticated */}
+            {currentUser && (
+                <div className="match-details-form">
+                    <div className="form-group">
+                        <label htmlFor="match-date">Date</label>
+                        <input
+                            id="match-date"
+                            type="date"
+                            value={matchDetails.date}
+                            onChange={(e) => handleMatchDetailsChange('date', e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="match-time">Time</label>
+                        <input
+                            id="match-time"
+                            type="time"
+                            value={matchDetails.time}
+                            onChange={(e) => handleMatchDetailsChange('time', e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="match-location">Location</label>
+                        <select
+                            id="match-location"
+                            value={matchDetails.location}
+                            onChange={(e) => handleMatchDetailsChange('location', e.target.value)}
                         >
-                            <h4 className="player-card-name">{player.name}</h4>
-                            <span className="player-card-value">{player.value}</span>
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* Generate Teams Section */}
-            <div className="generate-section">
-                <div className="selected-counter">
-                    <span className="selected-counter-number">{selectedPlayers.length}</span> / {players.length} players selected
+                            <option value="Fit Five">Fit Five</option>
+                            <option value="Halle">Halle</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="match-duration">Duration</label>
+                        <select
+                            id="match-duration"
+                            value={matchDetails.duration}
+                            onChange={(e) => handleMatchDetailsChange('duration', e.target.value)}
+                        >
+                            <option value="1h">1h</option>
+                            <option value="1h30">1h30</option>
+                        </select>
+                    </div>
                 </div>
-                <button
-                    className="generate-button"
-                    onClick={generateTeams}
-                    disabled={selectedPlayers.length < 2}
-                >
-                    Generate Teams
-                </button>
-            </div>
+            )}
 
-            {/* Teams Display */}
+            {/* Players Selection Grid - Only visible if authenticated */}
+            {currentUser && players.length > 0 && (
+                <div className="players-grid">
+                    {players.map(player => {
+                        const isSelected = selectedPlayers.find(p => p.id === player.id);
+                        return (
+                            <button
+                                key={player.id}
+                                className={`player-card ${isSelected ? 'selected' : ''}`}
+                                onClick={() => togglePlayerSelection(player)}
+                                onTouchEnd={(e) => {
+                                    e.currentTarget.blur();
+                                }}
+                            >
+                                <h4 className="player-card-name">{player.name}</h4>
+                                <span className="player-card-value">{player.value}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Generate Teams Section - Only visible if authenticated */}
+            {currentUser && (
+                <div className="generate-section">
+                    <div className="selected-counter">
+                        <span className="selected-counter-number">{selectedPlayers.length}</span> / {players.length} players selected
+                    </div>
+                    <button
+                        className="generate-button"
+                        onClick={generateTeams}
+                        disabled={selectedPlayers.length < 2}
+                    >
+                        Generate Teams
+                    </button>
+                </div>
+            )}
+
+            {/* Teams Display - Always visible if teams exist */}
             {teams.length === 2 && (
                 <div className="teams-wrapper">
                     {/* Teams Balance Info - Above teams */}
@@ -303,6 +304,14 @@ function Draw() {
                             </ul>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Empty state if not authenticated and no teams */}
+            {!currentUser && teams.length === 0 && (
+                <div className="empty-state">
+                    <div className="empty-state-icon">⚽</div>
+                    <p>No live match available. Check back soon!</p>
                 </div>
             )}
         </div>
