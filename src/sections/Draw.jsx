@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, addDoc, query, orderBy, limit } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, doc, setDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useSeason } from "../components/SeasonContext.jsx";
 import { useAuth } from "../components/AuthContext.jsx";
@@ -7,19 +7,29 @@ import "./Draw.css";
 
 function Draw() {
     const { selectedSeason } = useSeason();
-    const { currentUser } = useAuth(); // Get current user
+    const { currentUser } = useAuth();
     const [players, setPlayers] = useState([]);
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Match details state
+    const todayDateISO = new Date().toISOString().split("T")[0];
+
     const [matchDetails, setMatchDetails] = useState({
-        date: new Date().toISOString().split('T')[0],
-        time: '21:00',
-        location: 'Fit Five',
-        duration: '1h'
+        date: todayDateISO,
+        startTime: "21:00",
+        endTime: "22:00",
+        location: "Fit Five",
     });
+
+    // Fonction pour formater la date en JJ MM AA
+    const formatDateToJJMMAA = (isoDate) => {
+        const date = new Date(isoDate);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = String(date.getFullYear());
+        return `${day}-${month}-${year}`;
+    };
 
     useEffect(() => {
         if (!selectedSeason) return;
@@ -27,16 +37,18 @@ function Draw() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch players (only if authenticated)
+                // 1️⃣ Récupérer tous les joueurs
+                let playersList = [];
                 if (currentUser) {
                     const playersSnapshot = await getDocs(collection(db, `seasons/${selectedSeason}/players`));
-                    const playersList = playersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    playersList = playersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
                     setPlayers(playersList);
                 }
 
+                // 2️⃣ Récupérer le dernier match
                 const matchesQuery = query(
                     collection(db, `seasons/${selectedSeason}/matches`),
-                    orderBy('createdAt', 'desc'),
+                    orderBy("date", "desc"),
                     limit(1)
                 );
 
@@ -44,22 +56,17 @@ function Draw() {
 
                 if (!matchesSnapshot.empty) {
                     const lastMatch = matchesSnapshot.docs[0].data();
-                    // Only show last match if it's for the current season
-                    if (lastMatch.seasonId === selectedSeason) {
-                        setTeams([lastMatch.team1, lastMatch.team2]);
-                        setMatchDetails({
-                            date: lastMatch.date,
-                            time: lastMatch.time,
-                            location: lastMatch.location,
-                            duration: lastMatch.duration
-                        });
 
-                        // Set selected players based on last match (only if authenticated)
-                        if (currentUser) {
-                            const allPlayers = [...lastMatch.team1, ...lastMatch.team2];
-                            setSelectedPlayers(allPlayers);
-                        }
-                    }
+                    setTeams([lastMatch.team1, lastMatch.team2]);
+
+                    const dateParts = lastMatch.date.split("-");
+                    const isoDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+                    setMatchDetails({
+                        date: isoDate,
+                        startTime: lastMatch.startTime || "21:00",
+                        endTime: lastMatch.endTime || "22:00",
+                        location: lastMatch.location || "Fit Five",
+                    });
                 }
             } catch (e) {
                 console.error("Error loading data:", e);
@@ -67,13 +74,13 @@ function Draw() {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, [selectedSeason, currentUser]);
-
     const togglePlayerSelection = (player) => {
-        setSelectedPlayers(prev => {
-            if (prev.find(p => p.id === player.id)) {
-                return prev.filter(p => p.id !== player.id);
+        setSelectedPlayers((prev) => {
+            if (prev.find((p) => p.id === player.id)) {
+                return prev.filter((p) => p.id !== player.id);
             }
             return [...prev, player];
         });
@@ -84,30 +91,22 @@ function Draw() {
         let bestTeam1 = [];
         let bestTeam2 = [];
         let bestDifference = Infinity;
-
         const attempts = playersList.length <= 10 ? 1000 : 500;
 
         for (let attempt = 0; attempt < attempts; attempt++) {
-            let shuffled = [...playersList].sort(() => Math.random() - 0.5);
-            let team1 = [];
-            let team2 = [];
+            const shuffled = [...playersList].sort(() => Math.random() - 0.5);
+            const team1 = [];
+            const team2 = [];
 
             shuffled.forEach((player, index) => {
-                if (index % 2 === 0) {
-                    team1.push(player);
-                } else {
-                    team2.push(player);
-                }
+                (index % 2 === 0 ? team1 : team2).push(player);
             });
 
-            const total1 = team1.reduce((sum, p) => sum + p.value, 0);
-            const total2 = team2.reduce((sum, p) => sum + p.value, 0);
+            const total1 = team1.reduce((sum, p) => sum + (p.value || 0), 0);
+            const total2 = team2.reduce((sum, p) => sum + (p.value || 0), 0);
             const difference = Math.abs(total1 - total2);
 
-            if (difference <= MAX_DIFFERENCE) {
-                return [team1, team2];
-            }
-
+            if (difference <= MAX_DIFFERENCE) return [team1, team2];
             if (difference < bestDifference) {
                 bestDifference = difference;
                 bestTeam1 = [...team1];
@@ -124,36 +123,48 @@ function Draw() {
         const [team1, team2] = generateBalancedTeams(selectedPlayers);
         setTeams([team1, team2]);
 
-        // Save match to Firebase
         try {
-            await addDoc(collection(db, `seasons/${selectedSeason}/matches`), {
-                seasonId: selectedSeason,
-                team1: team1,
-                team2: team2,
-                date: matchDetails.date,
-                time: matchDetails.time,
+            // Formater la date JJ-MM-AAAA pour Firestore
+            const formattedDate = formatDateToJJMMAA(matchDetails.date);
+
+            // Stocker nom + value pour chaque joueur
+            const team1Data = team1.map(p => ({ name: p.name, value: p.value || 0 }));
+            const team2Data = team2.map(p => ({ name: p.name, value: p.value || 0 }));
+
+            const matchRef = doc(db, `seasons/${selectedSeason}/matches/${formattedDate}`);
+
+            await setDoc(matchRef, {
+                team1: team1Data,
+                team2: team2Data,
+                date: formattedDate,
+                startTime: matchDetails.startTime,
+                endTime: matchDetails.endTime,
                 location: matchDetails.location,
-                duration: matchDetails.duration,
-                createdAt: new Date().toISOString()
             });
-            console.log("Match saved successfully!");
+
+            console.log(`✅ Match saved successfully for ${formattedDate}`);
         } catch (error) {
-            console.error("Error saving match:", error);
+            console.error("❌ Error saving match:", error);
         }
     };
-
     const calculateDifference = () => {
         if (teams.length !== 2) return 0;
-        const total1 = teams[0].reduce((sum, p) => sum + p.value, 0);
-        const total2 = teams[1].reduce((sum, p) => sum + p.value, 0);
+        const total1 = teams[0].reduce((sum, p) => sum + (p.value || 0), 0);
+        const total2 = teams[1].reduce((sum, p) => sum + (p.value || 0), 0);
         return Math.abs(total1 - total2);
     };
 
     const handleMatchDetailsChange = (field, value) => {
-        setMatchDetails(prev => ({
+        setMatchDetails((prev) => ({
             ...prev,
-            [field]: value
+            [field]: value,
         }));
+
+        // Réinitialiser les équipes et joueurs sélectionnés si la date change
+        if (field === "date") {
+            setSelectedPlayers([]);
+            setTeams([]);
+        }
     };
 
     if (loading) {
@@ -171,10 +182,8 @@ function Draw() {
 
     return (
         <div className="draw-container">
-            {/* Section Title */}
             <h1 className="section-title">Live Draw</h1>
 
-            {/* Match Details Form - Only visible if authenticated */}
             {currentUser && (
                 <div className="match-details-form">
                     <div className="form-group">
@@ -183,16 +192,25 @@ function Draw() {
                             id="match-date"
                             type="date"
                             value={matchDetails.date}
-                            onChange={(e) => handleMatchDetailsChange('date', e.target.value)}
+                            onChange={(e) => handleMatchDetailsChange("date", e.target.value)}
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="match-time">Time</label>
+                        <label htmlFor="match-start">Start Time</label>
                         <input
-                            id="match-time"
+                            id="match-start"
                             type="time"
-                            value={matchDetails.time}
-                            onChange={(e) => handleMatchDetailsChange('time', e.target.value)}
+                            value={matchDetails.startTime}
+                            onChange={(e) => handleMatchDetailsChange("startTime", e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="match-end">End Time</label>
+                        <input
+                            id="match-end"
+                            type="time"
+                            value={matchDetails.endTime}
+                            readOnly
                         />
                     </div>
                     <div className="form-group">
@@ -200,39 +218,25 @@ function Draw() {
                         <select
                             id="match-location"
                             value={matchDetails.location}
-                            onChange={(e) => handleMatchDetailsChange('location', e.target.value)}
+                            onChange={(e) => handleMatchDetailsChange("location", e.target.value)}
                         >
                             <option value="Fit Five">Fit Five</option>
                             <option value="Halle">Halle</option>
                         </select>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="match-duration">Duration</label>
-                        <select
-                            id="match-duration"
-                            value={matchDetails.duration}
-                            onChange={(e) => handleMatchDetailsChange('duration', e.target.value)}
-                        >
-                            <option value="1h">1h</option>
-                            <option value="1h30">1h30</option>
-                        </select>
-                    </div>
                 </div>
             )}
 
-            {/* Players Selection Grid - Only visible if authenticated */}
             {currentUser && players.length > 0 && (
                 <div className="players-grid">
-                    {players.map(player => {
-                        const isSelected = selectedPlayers.find(p => p.id === player.id);
+                    {players.map((player) => {
+                        const isSelected = selectedPlayers.find((p) => p.id === player.id);
                         return (
                             <button
                                 key={player.id}
-                                className={`player-card ${isSelected ? 'selected' : ''}`}
+                                className={`player-card ${isSelected ? "selected" : ""}`}
                                 onClick={() => togglePlayerSelection(player)}
-                                onTouchEnd={(e) => {
-                                    e.currentTarget.blur();
-                                }}
+                                onTouchEnd={(e) => e.currentTarget.blur()}
                             >
                                 <h4 className="player-card-name">{player.name}</h4>
                                 <span className="player-card-value">{player.value}</span>
@@ -242,7 +246,6 @@ function Draw() {
                 </div>
             )}
 
-            {/* Generate Teams Section - Only visible if authenticated */}
             {currentUser && (
                 <div className="generate-section">
                     <div className="selected-counter">
@@ -258,56 +261,38 @@ function Draw() {
                 </div>
             )}
 
-            {/* Teams Display - Always visible if teams exist */}
             {teams.length === 2 && (
                 <div className="teams-wrapper">
-                    {/* Teams Balance Info - Above teams */}
                     <div className="teams-balance-info">
-                        <span className="balance-label">Gap:</span>
-                        <span className={`balance-value ${difference <= 1.5 ? 'balanced' : 'warning'}`}>
+                        <span className="balance-label">Gap :</span>
+                        <span className={`balance-value ${difference <= 1.5 ? "balanced" : "warning"}`}>
                             {difference.toFixed(2)}
                         </span>
                     </div>
 
                     <div className="teams-container">
-                        <div className="team-card team-1">
-                            <div className="team-header">
-                                <h3 className="team-title">Team 1</h3>
-                                <div className="team-total">
-                                    {teams[0].reduce((sum, p) => sum + p.value, 0).toFixed(2)}
+                        {[0, 1].map((i) => (
+                            <div key={i} className={`team-card team-${i + 1}`}>
+                                <div className="team-header">
+                                    <h3 className="team-title">Team {i + 1}</h3>
+                                    <div className="team-total">
+                                        {teams[i].reduce((sum, p) => sum + (p.value || 0), 0).toFixed(2)}
+                                    </div>
                                 </div>
+                                <ul className="team-players">
+                                    {teams[i].map((p) => (
+                                        <li key={p.id} className="team-player-item">
+                                            <span className="team-player-name">{p.name}</span>
+                                            <span className="team-player-value">{p.value}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <ul className="team-players">
-                                {teams[0].map(p => (
-                                    <li key={p.id} className="team-player-item">
-                                        <span className="team-player-name">{p.name}</span>
-                                        <span className="team-player-value">{p.value}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="team-card team-2">
-                            <div className="team-header">
-                                <h3 className="team-title">Team 2</h3>
-                                <div className="team-total">
-                                    {teams[1].reduce((sum, p) => sum + p.value, 0).toFixed(2)}
-                                </div>
-                            </div>
-                            <ul className="team-players">
-                                {teams[1].map(p => (
-                                    <li key={p.id} className="team-player-item">
-                                        <span className="team-player-name">{p.name}</span>
-                                        <span className="team-player-value">{p.value}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        ))}
                     </div>
                 </div>
             )}
 
-            {/* Empty state if not authenticated and no teams */}
             {!currentUser && teams.length === 0 && (
                 <div className="empty-state">
                     <div className="empty-state-icon">⚽</div>
