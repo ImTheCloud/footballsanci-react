@@ -74,6 +74,7 @@ function Ranking() {
 
     return (
         <div className="ranking-container">
+            <h1 className="section-title">FootballSanci</h1>
             <div className="ranking-list">
                 {players.map((player) => {
                     const isExpanded = expandedPlayer === player.id;

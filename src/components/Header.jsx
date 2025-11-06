@@ -7,12 +7,20 @@ function Header() {
 
     const scrollTo = (id) => {
         const element = document.getElementById(id);
-        if (element) element.scrollIntoView({ behavior: "smooth" });
+        if (element) {
+            const headerOffset = 80; // Hauteur de ton header
+            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+            const offsetPosition = elementPosition - headerOffset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth",
+            });
+        }
         setActiveSection(id);
     };
 
     useEffect(() => {
-        // ✅ "draw" est maintenant avant "statistics"
         const sections = ["ranking", "history", "draw", "statistics"];
         const handleScroll = () => {
             const scrollPos = window.scrollY + 80; // offset pour le header
@@ -50,7 +58,6 @@ function Header() {
                     ))}
                 </select>
 
-                {/* ✅ "draw" avant "statistics" ici aussi */}
                 {["ranking", "history", "draw", "statistics"].map((sec) => (
                     <button
                         key={sec}
@@ -112,7 +119,6 @@ const styles = {
         padding: "12px 0px 12px 0px",
         fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
         fontWeight: 500,
-        outline: "none",
         cursor: "pointer",
         appearance: "none",
         WebkitAppearance: "none",
@@ -137,6 +143,7 @@ const styles = {
         fontWeight: 500,
         padding: "4px 6px",
         whiteSpace: "nowrap",
+        textDecoration: "none",
     },
     activeNavBtn: {
         color: "#10B981",

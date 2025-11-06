@@ -159,7 +159,6 @@ const styles = {
         cursor: "pointer",
         padding: "2px 6px",
         borderRadius: "4px",
-        transition: "all 0.3s ease",
         display: "inline-block",
         fontWeight: "600",
     },
@@ -170,7 +169,6 @@ const styles = {
         justifyContent: "center",
         padding: "2px 4px",
         borderRadius: "4px",
-        transition: "all 0.2s ease",
     },
     overlay: {
         position: "fixed",
@@ -184,7 +182,6 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         zIndex: 1000,
-        animation: "fadeIn 0.2s ease",
     },
     modal: {
         background: "rgba(10, 10, 10, 0.95)",
@@ -193,10 +190,9 @@ const styles = {
         padding: "32px",
         width: "90%",
         maxWidth: "420px",
-        backdropFilter: "blur(20px)",
         boxShadow: "0 0 40px rgba(16, 185, 129, 0.2)",
         position: "relative",
-        animation: "slideUp 0.3s ease",
+        transition: "none",
     },
     closeButton: {
         position: "absolute",
@@ -209,7 +205,6 @@ const styles = {
         cursor: "pointer",
         padding: "4px 8px",
         borderRadius: "4px",
-        transition: "all 0.2s ease",
         lineHeight: 1,
     },
     modalHeader: {
@@ -254,7 +249,6 @@ const styles = {
         fontSize: "15px",
         color: "#fff",
         outline: "none",
-        transition: "all 0.3s ease",
         fontFamily: "inherit",
     },
     error: {
@@ -276,7 +270,6 @@ const styles = {
         fontSize: "16px",
         fontWeight: "700",
         cursor: "pointer",
-        transition: "all 0.3s ease",
         textTransform: "uppercase",
         letterSpacing: "0.5px",
         boxShadow: "0 4px 15px rgba(16, 185, 129, 0.2)",
