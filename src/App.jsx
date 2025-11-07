@@ -17,8 +17,9 @@ function App() {
                 <Header />
                 <main style={{ position: "relative", zIndex: 1 }}>
                     <section id="ranking"><Ranking /></section>
-                    <section id="history"><History /></section>
                     <section id="draw"><Draw /></section>
+                    <section id="history"><History /></section>
+
                 </main>
                 <Footer />
             </SeasonProvider>

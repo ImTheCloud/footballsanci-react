@@ -3,7 +3,8 @@ import Section from "../components/Section";
 
 function History() {
     return (
-        <Section title="Match History">
+        <Section>
+            <h1 className="section-title">History</h1>
             <p>Coming soon: list of past matches here.</p>
         </Section>
     );

@@ -21,7 +21,7 @@ function Header() {
     };
 
     useEffect(() => {
-        const sections = ["ranking", "history", "draw"];
+        const sections = ["ranking", "draw","history"];
         const handleScroll = () => {
             const scrollPos = window.scrollY + 80; // offset pour le header
             for (let i = sections.length - 1; i >= 0; i--) {
@@ -59,7 +59,7 @@ function Header() {
                 </select>
             </div>
             <div style={styles.rightContainer}>
-                {["ranking", "history", "draw"].map((sec) => (
+                {["ranking", "draw","history"].map((sec) => (
                     <button
                         key={sec}
                         style={{
