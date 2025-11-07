@@ -7,7 +7,6 @@ import BackgroundFx from "./components/BackgroundFx";
 
 import Ranking from "./sections/Ranking";
 import History from "./sections/History";
-import Statistics from "./sections/Statistics";
 import Draw from "./sections/Draw";
 
 function App() {
@@ -20,7 +19,6 @@ function App() {
                     <section id="ranking"><Ranking /></section>
                     <section id="history"><History /></section>
                     <section id="draw"><Draw /></section>
-                    <section id="statistics"><Statistics /></section>
                 </main>
                 <Footer />
             </SeasonProvider>

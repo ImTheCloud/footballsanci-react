@@ -21,7 +21,7 @@ function Header() {
     };
 
     useEffect(() => {
-        const sections = ["ranking", "history", "draw", "statistics"];
+        const sections = ["ranking", "history", "draw"];
         const handleScroll = () => {
             const scrollPos = window.scrollY + 80; // offset pour le header
             for (let i = sections.length - 1; i >= 0; i--) {
@@ -58,7 +58,7 @@ function Header() {
                     ))}
                 </select>
 
-                {["ranking", "history", "draw", "statistics"].map((sec) => (
+                {["ranking", "history", "draw"].map((sec) => (
                     <button
                         key={sec}
                         style={{
