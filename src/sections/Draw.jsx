@@ -98,7 +98,11 @@ const MatchDetailsForm = ({ matchDetails, onChange }) => (
             />
         </MatchInfoRow>
         <MatchInfoRow label="End">
-            <input type="time" value={matchDetails.endTime} readOnly />
+            <input
+                type="time"
+                value={matchDetails.endTime}
+                onChange={(e) => onChange("endTime", e.target.value)}
+            />
         </MatchInfoRow>
         <MatchInfoRow label="Location">
             <select
