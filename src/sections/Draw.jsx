@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { collection, getDocs, query, orderBy, limit, doc, setDoc } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useSeason } from "../components/SeasonContext.jsx";
 import { useAuth } from "../components/AuthContext.jsx";
@@ -207,7 +207,19 @@ const TeamCard = ({ team, index }) => {
     );
 };
 
-const TeamsDisplay = ({ teams, matchData }) => (
+const SaveMatchSection = ({ onSave, disabled }) => (
+    <div className="generate-section">
+        <button
+            className="generate-button"
+            onClick={onSave}
+            disabled={disabled}
+        >
+            Save Match
+        </button>
+    </div>
+);
+
+const TeamsDisplay = ({ teams, matchData, onSaveMatch, currentUser }) => (
     <div className="teams-wrapper">
         <MatchInfoDisplay matchData={matchData} />
         <div className="teams-container">
@@ -215,6 +227,9 @@ const TeamsDisplay = ({ teams, matchData }) => (
                 <TeamCard key={index} team={team} index={index} />
             ))}
         </div>
+        {currentUser && (
+            <SaveMatchSection onSave={onSaveMatch} disabled={false} />
+        )}
     </div>
 );
 
@@ -228,7 +243,7 @@ function Draw() {
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
     const [matchDetails, setMatchDetails] = useState(INITIAL_MATCH_DETAILS);
-    const [lastMatch, setLastMatch] = useState(null);
+    const [liveMatch, setLiveMatch] = useState(null);
 
     // Fetch data from Firebase
     const fetchData = useCallback(async () => {
@@ -248,21 +263,17 @@ function Draw() {
                 setPlayers(playersList);
             }
 
-            // Fetch last match
-            const matchesQuery = query(
-                collection(db, `seasons/${selectedSeason}/matches`),
-                orderBy("date", "desc"),
-                limit(1)
-            );
-            const matchesSnapshot = await getDocs(matchesQuery);
+            // Fetch live match
+            const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
+            const liveMatchSnapshot = await getDoc(liveMatchRef);
 
-            if (!matchesSnapshot.empty) {
-                const lastMatchData = matchesSnapshot.docs[0].data();
-                setTeams([lastMatchData.team1, lastMatchData.team2]);
-                setLastMatch(lastMatchData);
+            if (liveMatchSnapshot.exists()) {
+                const liveMatchData = liveMatchSnapshot.data();
+                setTeams([liveMatchData.team1, liveMatchData.team2]);
+                setLiveMatch(liveMatchData);
             } else {
                 setTeams([]);
-                setLastMatch(null);
+                setLiveMatch(null);
             }
         } catch (error) {
             console.error("Error loading data:", error);
@@ -319,7 +330,7 @@ function Draw() {
         return [bestTeam1, bestTeam2];
     }, [matchDetails.gap]);
 
-    // Generate and save teams
+    // Generate and save teams to Live
     const generateTeams = useCallback(async () => {
         if (selectedPlayers.length < 2) return;
 
@@ -328,7 +339,7 @@ function Draw() {
 
         try {
             const formattedDate = formatDateToJJMMAA(matchDetails.date);
-            const matchRef = doc(db, `seasons/${selectedSeason}/matches/${formattedDate}`);
+            const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
 
             const matchData = {
                 team1: team1.map(p => ({ name: p.name, value: p.value || 0 })),
@@ -340,26 +351,40 @@ function Draw() {
                 gap: matchDetails.gap ?? 1.5,
             };
 
-            await setDoc(matchRef, matchData);
+            await setDoc(liveMatchRef, matchData);
 
-            // Refresh last match info
-            const savedMatchSnapshot = await getDocs(
-                query(
-                    collection(db, `seasons/${selectedSeason}/matches`),
-                    orderBy("date", "desc"),
-                    limit(1)
-                )
-            );
+            // Update local state
+            setLiveMatch(matchData);
+        } catch (error) {
+            console.error("Error saving live match:", error);
+        }
+    }, [selectedPlayers, matchDetails, generateBalancedTeams, selectedSeason]);
 
-            if (!savedMatchSnapshot.empty) {
-                const updatedLastMatch = savedMatchSnapshot.docs[0].data();
-                setLastMatch(updatedLastMatch);
-                setTeams([updatedLastMatch.team1, updatedLastMatch.team2]);
-            }
+    // Save match permanently and delete Live
+    const saveMatch = useCallback(async () => {
+        if (!liveMatch) return;
+
+        try {
+            // Save to permanent collection with date as ID
+            const formattedDate = liveMatch.date;
+            const matchRef = doc(db, `seasons/${selectedSeason}/matches/${formattedDate}`);
+
+            await setDoc(matchRef, liveMatch);
+
+            // Delete Live match
+            const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
+            await deleteDoc(liveMatchRef);
+
+            // Clear local state
+            setTeams([]);
+            setLiveMatch(null);
+            setSelectedPlayers([]);
+
+            console.log("Match saved successfully and Live cleared!");
         } catch (error) {
             console.error("Error saving match:", error);
         }
-    }, [selectedPlayers, matchDetails, generateBalancedTeams, selectedSeason]);
+    }, [liveMatch, selectedSeason]);
 
     // Handle match details changes
     const handleMatchDetailsChange = useCallback((field, value) => {
@@ -367,7 +392,6 @@ function Draw() {
 
         if (field === "date") {
             setSelectedPlayers([]);
-            setTeams([]);
         }
     }, []);
 
@@ -407,7 +431,14 @@ function Draw() {
                 </>
             )}
 
-            {hasTeams && <TeamsDisplay teams={teams} matchData={lastMatch} />}
+            {hasTeams && (
+                <TeamsDisplay
+                    teams={teams}
+                    matchData={liveMatch}
+                    onSaveMatch={saveMatch}
+                    currentUser={currentUser}
+                />
+            )}
 
             {!currentUser && !hasTeams && <EmptyState />}
         </div>
