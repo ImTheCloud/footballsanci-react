@@ -239,10 +239,20 @@ function Ranking() {
                 );
                 const list = snapshot.docs
                     .map((doc) => ({ id: doc.id, ...doc.data() }))
-                    .sort((a, b) =>
-                        (b.points || 0) - (a.points || 0) ||
-                        (b.value || 0) - (a.value || 0)
-                    );
+                    .sort((a, b) => {
+                        // ✅ Always put players with 0 matches last
+                        if ((a.matches || 0) === 0 && (b.matches || 0) > 0) return 1;
+                        if ((b.matches || 0) === 0 && (a.matches || 0) > 0) return -1;
+
+                        // 🏅 Then sort by points
+                        if ((b.points || 0) !== (a.points || 0)) return (b.points || 0) - (a.points || 0);
+
+                        // ⚽ If same points, prioritize fewer matches
+                        if ((a.matches || 0) !== (b.matches || 0)) return (a.matches || 0) - (b.matches || 0);
+
+                        // 🔢 Finally by value
+                        return (b.value || 0) - (a.value || 0);
+                    });
                 setPlayers(list);
                 setExpandedPlayer(null);
             } catch (error) {
@@ -277,10 +287,20 @@ function Ranking() {
                     ? { ...p, [field]: newValue, ...stats }
                     : p
                 )
-                .sort((a, b) =>
-                    (b.points || 0) - (a.points || 0) ||
-                    (b.value || 0) - (a.value || 0)
-                )
+                .sort((a, b) => {
+                    // ✅ Always put players with 0 matches last
+                    if ((a.matches || 0) === 0 && (b.matches || 0) > 0) return 1;
+                    if ((b.matches || 0) === 0 && (a.matches || 0) > 0) return -1;
+
+                    // 🏅 Then sort by points
+                    if ((b.points || 0) !== (a.points || 0)) return (b.points || 0) - (a.points || 0);
+
+                    // ⚽ If same points, prioritize fewer matches
+                    if ((a.matches || 0) !== (b.matches || 0)) return (a.matches || 0) - (b.matches || 0);
+
+                    // 🔢 Finally by value
+                    return (b.value || 0) - (a.value || 0);
+                })
         );
 
         // Update Firebase
@@ -315,6 +335,41 @@ function Ranking() {
     if (loading) return <LoadingState />;
     if (players.length === 0) return <EmptyState />;
 
+    // 🧮 Dense ranking (players with 0 matches share same rank, sequential numbering)
+    const ranks = [];
+    let currentRank = 1;
+    let uniqueRankCount = 0;
+
+    players.forEach((player, i) => {
+        if (
+            i > 0 &&
+            (players[i - 1].matches || 0) > 0 &&
+            player.points === players[i - 1].points &&
+            player.matches === players[i - 1].matches &&
+            player.value === players[i - 1].value
+        ) {
+            // Même stats → même rang
+            ranks.push(currentRank);
+        } else if ((player.matches || 0) > 0) {
+            // Rang suivant uniquement pour nouvelles stats
+            currentRank = uniqueRankCount + 1;
+            ranks.push(currentRank);
+            uniqueRankCount++;
+        } else {
+            // On n'ajoute pas encore le rang des joueurs sans match
+            ranks.push(null);
+        }
+    });
+
+    // Calcule le rang de départ pour les joueurs sans match
+    const lastRank = Math.max(...ranks.filter(r => r !== null));
+    const zeroMatchRankStart = lastRank + 1;
+
+    // Assigne le rang des joueurs sans match
+    ranks.forEach((r, i) => {
+        if (r === null) ranks[i] = zeroMatchRankStart;
+    });
+
     return (
         <div className="ranking-container">
             <h1 className="section-title">FootballSanci</h1>
@@ -323,7 +378,7 @@ function Ranking() {
                     <RankingItem
                         key={player.id}
                         player={player}
-                        rank={index + 1}
+                        rank={ranks[index]}
                         isExpanded={expandedPlayer === player.id}
                         onToggle={togglePlayerExpansion}
                         currentUser={currentUser}
