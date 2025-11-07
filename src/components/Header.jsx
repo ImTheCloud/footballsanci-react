@@ -121,7 +121,6 @@ const styles = {
     },
     select: {
         background: "transparent",
-        color: "transparent",
         border: "none",
         borderRadius: "8px",
         padding: "12px 32px 12px 0px",
@@ -138,6 +137,14 @@ const styles = {
         backgroundSize: "10px 6px",
         transition: "opacity 0.2s ease",
         lineHeight: "1.2",
+        color: "#000",
+        "::after": {
+            color: "#fff",
+        },
+    },
+    option: {
+        color: "#000",
+        backgroundColor: "#fff",
     },
     navBtn: {
         background: "transparent",
