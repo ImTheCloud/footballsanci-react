@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {useState, useEffect, useCallback, useMemo, useRef} from "react";
 import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useSeason } from "../components/SeasonContext.jsx";
@@ -162,6 +162,19 @@ const TempPlayerCard = ({ onAdd }) => {
     const [tempName, setTempName] = useState("");
     const [tempValue, setTempValue] = useState("");
     const [isAdding, setIsAdding] = useState(false);
+    const formRef = useRef(null);
+
+    // 🔹 Fait défiler le formulaire dans la zone visible quand on passe en mode ajout
+    useEffect(() => {
+        if (isAdding && formRef.current) {
+            setTimeout(() => {
+                formRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+            }, 300);
+        }
+    }, [isAdding]);
 
     const handleAdd = () => {
         const value = parseFloat(tempValue);
@@ -201,7 +214,7 @@ const TempPlayerCard = ({ onAdd }) => {
     }
 
     return (
-        <div className="player-card temp-player-card-form">
+        <div ref={formRef} className="player-card temp-player-card-form">
             <input
                 type="text"
                 className="temp-player-input temp-player-name"
@@ -224,14 +237,14 @@ const TempPlayerCard = ({ onAdd }) => {
                 }}
                 onKeyDown={(e) => {
                     if (
-                        !/[0-9.,]/.test(e.key) && // autorise chiffres et séparateurs
+                        !/[0-9.,]/.test(e.key) &&
                         e.key !== "Backspace" &&
                         e.key !== "Delete" &&
                         e.key !== "ArrowLeft" &&
                         e.key !== "ArrowRight" &&
                         e.key !== "Tab"
                     ) {
-                        e.preventDefault(); // empêche toute autre touche
+                        e.preventDefault();
                     }
                 }}
                 onKeyPress={(e) => handleKeyPress(e, 'value')}
