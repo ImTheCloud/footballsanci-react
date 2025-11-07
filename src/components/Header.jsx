@@ -38,7 +38,7 @@ function Header() {
 
     const getShortLabel = (season) => {
         const match = season.match(/\d+/);
-        return match ? `S${match[0]}` : season;
+        return match ? `Season ${match[0]}` : season;
     };
 
     return (
@@ -57,7 +57,8 @@ function Header() {
                         </option>
                     ))}
                 </select>
-
+            </div>
+            <div style={styles.rightContainer}>
                 {["ranking", "history", "draw"].map((sec) => (
                     <button
                         key={sec}
@@ -82,7 +83,7 @@ const styles = {
         left: 0,
         right: 0,
         display: "flex",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         alignItems: "center",
         padding: "12px 0",
         color: "#fff",
@@ -99,6 +100,12 @@ const styles = {
         padding: 0,
         position: "relative",
     },
+    rightContainer: {
+        display: "flex",
+        alignItems: "center",
+        gap: "0.6rem",
+        paddingRight: "1.2rem",
+    },
     customSelectLabel: {
         position: "absolute",
         left: 10,
@@ -110,13 +117,14 @@ const styles = {
         fontWeight: 500,
         userSelect: "none",
         zIndex: 10,
+        whiteSpace: "nowrap",
     },
     select: {
         background: "transparent",
         color: "transparent",
         border: "none",
         borderRadius: "8px",
-        padding: "12px 0px 12px 0px",
+        padding: "12px 32px 12px 0px",
         fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
         fontWeight: 500,
         cursor: "pointer",
@@ -126,9 +134,10 @@ const styles = {
         backgroundImage:
             "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 6\" fill=\"white\"><path d=\"M0 0l5 6 5-6H0z\"/></svg>')",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "left 40px center",
+        backgroundPosition: "right 0px center",
         backgroundSize: "10px 6px",
         transition: "opacity 0.2s ease",
+        lineHeight: "1.2",
     },
     navBtn: {
         background: "transparent",
@@ -144,6 +153,7 @@ const styles = {
         padding: "4px 6px",
         whiteSpace: "nowrap",
         textDecoration: "none",
+        lineHeight: "1.2",
     },
     activeNavBtn: {
         color: "#10B981",
