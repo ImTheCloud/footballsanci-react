@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { collection, getDocs, query, orderBy, limit, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useSeason } from "../components/SeasonContext.jsx";
 import { useAuth } from "../components/AuthContext.jsx";
@@ -207,8 +207,46 @@ const TeamCard = ({ team, index }) => {
     );
 };
 
-const SaveMatchSection = ({ onSave, disabled }) => (
-    <div className="generate-section">
+const ScoreInput = ({ scoreTeam1, scoreTeam2, onChange }) => {
+    const handleFocus = (e) => {
+        // Sélectionne automatiquement tout le texte quand on clique dans la case
+        e.target.select();
+    };
+
+    const handleChange = (team, value) => {
+        const parsed = parseInt(value, 10);
+        onChange(team, isNaN(parsed) ? 0 : parsed);
+    };
+
+    return (
+        <div className="score-input-wrapper">
+                <input
+                    type="number"
+                    min="0"
+                    value={scoreTeam1}
+                    onFocus={handleFocus}
+                    onChange={(e) => handleChange("scoreTeam1", e.target.value)}
+                    className="score-input score-input-team1"
+                />
+                <span className="score-separator">-</span>
+                <input
+                    type="number"
+                    min="0"
+                    value={scoreTeam2}
+                    onFocus={handleFocus}
+                    onChange={(e) => handleChange("scoreTeam2", e.target.value)}
+                    className="score-input score-input-team2"
+                />
+        </div>
+    );
+};
+const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disabled }) => (
+    <div className="save-match-section">
+        <ScoreInput
+            scoreTeam1={scoreTeam1}
+            scoreTeam2={scoreTeam2}
+            onChange={onScoreChange}
+        />
         <button
             className="generate-button"
             onClick={onSave}
@@ -219,7 +257,7 @@ const SaveMatchSection = ({ onSave, disabled }) => (
     </div>
 );
 
-const TeamsDisplay = ({ teams, matchData, onSaveMatch, currentUser }) => (
+const TeamsDisplay = ({ teams, matchData, scoreTeam1, scoreTeam2, onScoreChange, onSaveMatch, currentUser }) => (
     <div className="teams-wrapper">
         <MatchInfoDisplay matchData={matchData} />
         <div className="teams-container">
@@ -228,7 +266,13 @@ const TeamsDisplay = ({ teams, matchData, onSaveMatch, currentUser }) => (
             ))}
         </div>
         {currentUser && (
-            <SaveMatchSection onSave={onSaveMatch} disabled={false} />
+            <SaveMatchSection
+                scoreTeam1={scoreTeam1}
+                scoreTeam2={scoreTeam2}
+                onScoreChange={onScoreChange}
+                onSave={onSaveMatch}
+                disabled={false}
+            />
         )}
     </div>
 );
@@ -244,6 +288,8 @@ function Draw() {
     const [loading, setLoading] = useState(true);
     const [matchDetails, setMatchDetails] = useState(INITIAL_MATCH_DETAILS);
     const [liveMatch, setLiveMatch] = useState(null);
+    const [scoreTeam1, setScoreTeam1] = useState(0);
+    const [scoreTeam2, setScoreTeam2] = useState(0);
 
     // Fetch data from Firebase
     const fetchData = useCallback(async () => {
@@ -271,9 +317,13 @@ function Draw() {
                 const liveMatchData = liveMatchSnapshot.data();
                 setTeams([liveMatchData.team1, liveMatchData.team2]);
                 setLiveMatch(liveMatchData);
+                setScoreTeam1(liveMatchData.scoreTeam1 || 0);
+                setScoreTeam2(liveMatchData.scoreTeam2 || 0);
             } else {
                 setTeams([]);
                 setLiveMatch(null);
+                setScoreTeam1(0);
+                setScoreTeam2(0);
             }
         } catch (error) {
             console.error("Error loading data:", error);
@@ -337,6 +387,10 @@ function Draw() {
         const [team1, team2] = generateBalancedTeams(selectedPlayers);
         setTeams([team1, team2]);
 
+        // Reset scores when generating new teams
+        setScoreTeam1(0);
+        setScoreTeam2(0);
+
         try {
             const formattedDate = formatDateToJJMMAA(matchDetails.date);
             const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
@@ -349,6 +403,8 @@ function Draw() {
                 endTime: matchDetails.endTime,
                 location: matchDetails.location,
                 gap: matchDetails.gap ?? 1.5,
+                scoreTeam1: 0,
+                scoreTeam2: 0,
             };
 
             await setDoc(liveMatchRef, matchData);
@@ -360,6 +416,15 @@ function Draw() {
         }
     }, [selectedPlayers, matchDetails, generateBalancedTeams, selectedSeason]);
 
+    // Handle score change
+    const handleScoreChange = useCallback((field, value) => {
+        if (field === "scoreTeam1") {
+            setScoreTeam1(value);
+        } else if (field === "scoreTeam2") {
+            setScoreTeam2(value);
+        }
+    }, []);
+
     // Save match permanently and delete Live
     const saveMatch = useCallback(async () => {
         if (!liveMatch) return;
@@ -369,7 +434,13 @@ function Draw() {
             const formattedDate = liveMatch.date;
             const matchRef = doc(db, `seasons/${selectedSeason}/matches/${formattedDate}`);
 
-            await setDoc(matchRef, liveMatch);
+            const finalMatchData = {
+                ...liveMatch,
+                scoreTeam1,
+                scoreTeam2,
+            };
+
+            await setDoc(matchRef, finalMatchData);
 
             // Delete Live match
             const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
@@ -379,12 +450,14 @@ function Draw() {
             setTeams([]);
             setLiveMatch(null);
             setSelectedPlayers([]);
+            setScoreTeam1(0);
+            setScoreTeam2(0);
 
             console.log("Match saved successfully and Live cleared!");
         } catch (error) {
             console.error("Error saving match:", error);
         }
-    }, [liveMatch, selectedSeason]);
+    }, [liveMatch, selectedSeason, scoreTeam1, scoreTeam2]);
 
     // Handle match details changes
     const handleMatchDetailsChange = useCallback((field, value) => {
@@ -435,6 +508,9 @@ function Draw() {
                 <TeamsDisplay
                     teams={teams}
                     matchData={liveMatch}
+                    scoreTeam1={scoreTeam1}
+                    scoreTeam2={scoreTeam2}
+                    onScoreChange={handleScoreChange}
                     onSaveMatch={saveMatch}
                     currentUser={currentUser}
                 />

@@ -308,6 +308,89 @@
 }
 
 /* ==========================================================================
+   Score Input Section
+   ========================================================================== */
+
+.save-match-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.score-input-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.score-input {
+    width: 60px;
+    height: 50px;
+    background: rgba(6, 78, 59, 0.25);
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: 0.5rem;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.3s ease;
+    padding: 0.4rem;
+}
+
+.score-input:focus {
+    outline: none;
+    border-color: rgba(16, 185, 129, 0.7);
+    background: rgba(6, 78, 59, 0.35);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.score-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.score-input-team1 {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+.score-input-team1:focus {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.score-input-team2 {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(239, 68, 68, 0.6);
+}
+
+.score-input-team2:focus {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+.score-separator {
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(255, 255, 255);
+    text-shadow: 0 0 10px rgba(5, 104, 72, 0.5);
+    margin: 0 0.75rem;
+}
+
+/* ==========================================================================
    Teams Display
    ========================================================================== */
 
@@ -670,6 +753,23 @@
         font-size: 0.9375rem;
     }
 
+    .score-label {
+        font-size: 0.875rem;
+    }
+
+    .score-input {
+        width: 60px;
+        height: 40px;
+        font-size: 1.05rem;
+    }
+
+    .score-separator {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(5, 104, 72, 0.5);
+        margin: 0.4rem;
+    }
     .teams-container {
         gap: 0.75rem;
     }
