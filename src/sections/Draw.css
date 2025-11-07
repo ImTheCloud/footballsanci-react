@@ -769,6 +769,16 @@
     margin: 0;
 }
 
+.player-card,
+.player-card:hover,
+.player-card:active,
+.player-card:focus,
+.player-card:focus-visible {
+    text-decoration: none;
+    outline: none;
+}
+
+
 /* ==========================================================================
    Animations
    ========================================================================== */
@@ -884,14 +894,6 @@
         gap: 0.5rem;
     }
 
-    .player-card,
-    .player-card:hover,
-    .player-card:active,
-    .player-card:focus,
-    .player-card:focus-visible {
-        text-decoration: none;
-        outline: none;
-    }
 
     .player-card-name {
         text-align: left;
