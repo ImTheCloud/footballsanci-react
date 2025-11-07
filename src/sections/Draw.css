@@ -1,21 +1,45 @@
+/* ==========================================================================
+   Base Container
+   ========================================================================== */
+
 .draw-container {
     position: relative;
     width: 100%;
     min-height: 100vh;
     padding: 1.5rem;
-    z-index: 1;
     box-sizing: border-box;
 }
 
-.section-title {
-    text-align: center;
+/* ==========================================================================
+   Match Box - Unified Component
+   ========================================================================== */
+
+.match-box {
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.75) 60%, rgba(16, 185, 129, 0.08) 100%);
+    border: 2px solid rgba(16, 185, 129, 0.55);
+    border-radius: 1.1rem;
+    box-shadow:
+            0 0 0 2.5px rgba(16, 185, 129, 0.18),
+            0 0 18px 0 rgba(16, 185, 129, 0.22),
+            0 0 38px 0 rgba(16, 185, 129, 0.11);
+    padding: 0 0.9rem 1rem 0.9rem;
+    margin: 0 auto 1.5rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    width: 90%;
+    max-width: 460px;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.match-info-title {
     font-size: 3rem;
     font-weight: 800;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 2px;
-    margin: 0 0 3rem 0;
+    margin: 0 0 1rem 0;
     padding-top: 0.7rem;
+    text-align: center;
     text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
     background: linear-gradient(135deg, rgba(16, 185, 129, 1), rgba(6, 78, 59, 1));
     -webkit-background-clip: text;
@@ -23,7 +47,138 @@
     background-clip: text;
 }
 
-/* Players Selection Grid */
+.match-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.match-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(6, 78, 59, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.13);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1.1rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.05rem;
+    font-weight: 500;
+    box-shadow: 0 1px 4px 0 rgba(16, 185, 129, 0.06);
+    position: relative;
+}
+
+.match-row::before {
+    content: '';
+    display: inline-block;
+    width: 0.83rem;
+    height: 0.83rem;
+    margin-right: 0.7rem;
+    border-radius: 0.25rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(6, 78, 59, 0.6));
+    opacity: 0.7;
+}
+
+.match-row label {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    min-width: 100px;
+}
+
+/* Form Inputs */
+.match-row input,
+.match-row select {
+    flex: 1;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(6, 78, 59, 0.2);
+    color: #fff;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, background 0.2s;
+    height: 38px;
+    text-align: center;
+}
+
+.match-row input:focus,
+.match-row select:focus {
+    border-color: rgba(16, 185, 129, 0.7);
+    outline: none;
+    background: rgba(6, 78, 59, 0.3);
+}
+
+.match-row input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+/* Display Value (read-only) */
+.match-value {
+    flex: 1;
+    padding: 0.4rem 0.6rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: right;
+}
+
+.empty-message {
+    margin: 0;
+    text-align: center;
+    width: 100%;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Gap Control */
+.gap-control {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.gap-control button {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    background: rgba(6, 78, 59, 0.3);
+    color: rgba(16, 185, 129, 1);
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.gap-control button:hover {
+    background: rgba(6, 78, 59, 0.5);
+    border-color: rgba(16, 185, 129, 0.7);
+}
+
+.gap-control button:active {
+    transform: scale(0.95);
+}
+
+.gap-control span {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+    font-size: 0.95rem;
+    min-width: 35px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   Players Selection
+   ========================================================================== */
+
 .players-grid {
     width: 100%;
     max-width: 900px;
@@ -50,18 +205,15 @@
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    text-decoration: none !important;
-}
-
-.player-card * {
-    text-decoration: none !important;
 }
 
 .player-card:focus {
     outline: none;
+}
+
+.player-card:focus-visible {
+    outline: 2px solid rgba(16, 185, 129, 0.6);
+    outline-offset: 2px;
 }
 
 .player-card:active {
@@ -82,7 +234,6 @@
     line-height: 1.3;
     word-break: break-word;
     margin: 0;
-    text-decoration: none !important;
 }
 
 .player-card-value {
@@ -93,7 +244,10 @@
     line-height: 1;
 }
 
-/* Generate Button Section */
+/* ==========================================================================
+   Generate Button Section
+   ========================================================================== */
+
 .generate-section {
     width: 100%;
     max-width: 900px;
@@ -103,14 +257,12 @@
     justify-content: center;
     align-items: center;
     gap: 0.75rem;
-    position: relative;
 }
 
 .selected-counter {
     font-size: 0.9375rem;
     color: rgba(255, 255, 255, 0.7);
     font-weight: 500;
-    order: -1;
 }
 
 .selected-counter-number {
@@ -133,12 +285,7 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
     -webkit-tap-highlight-color: transparent;
-    text-decoration: none !important;
 }
 
 .generate-button:hover:not(:disabled) {
@@ -155,84 +302,19 @@
     border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Match Details Form */
-.match-details-form {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto 2rem;
-    background: rgba(10, 10, 10, 0.6);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    box-sizing: border-box;
+.generate-button:focus-visible {
+    outline: 2px solid rgba(16, 185, 129, 0.6);
+    outline-offset: 2px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
+/* ==========================================================================
+   Teams Display
+   ========================================================================== */
 
-.form-group label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.form-group input,
-.form-group select {
-    background: rgba(6, 78, 59, 0.2);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    color: #fff;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: rgba(16, 185, 129, 0.6);
-    background: rgba(6, 78, 59, 0.3);
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-}
-
-.form-group input[type="date"]::-webkit-calendar-picker-indicator,
-.form-group input[type="time"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
-}
-
-/* Teams Display */
 .teams-wrapper {
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-    box-sizing: border-box;
-}
-
-.teams-balance-info {
-    width: 100%;
-    background: rgba(10, 10, 10, 0.6);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: 0.75rem;
-    padding: 1rem 1.5rem;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
     box-sizing: border-box;
 }
 
@@ -243,41 +325,6 @@
     gap: 0.75rem;
     animation: fadeIn 0.5s ease forwards;
     box-sizing: border-box;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.balance-label {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.balance-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: rgba(16, 185, 129, 1);
-    text-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
-}
-
-.balance-value.balanced {
-    color: rgba(16, 185, 129, 1);
-}
-
-.balance-value.warning {
-    color: rgba(251, 191, 36, 1);
-    text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
 }
 
 .team-card {
@@ -295,6 +342,7 @@
     box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
 }
 
+/* Team Colors */
 .team-card.team-1 {
     border-color: rgba(59, 130, 246, 0.5);
 }
@@ -313,6 +361,7 @@
     box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
 }
 
+/* Team Header */
 .team-header {
     display: flex;
     justify-content: space-between;
@@ -371,6 +420,7 @@
     border-color: rgba(239, 68, 68, 0.4);
 }
 
+/* Team Players List */
 .team-players {
     list-style: none;
     padding: 0;
@@ -438,6 +488,10 @@
     color: rgba(239, 68, 68, 1);
 }
 
+/* ==========================================================================
+   State Displays
+   ========================================================================== */
+
 /* Empty State */
 .empty-state {
     display: flex;
@@ -479,19 +533,54 @@
     animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 .loading-state p {
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.9375rem;
     margin: 0;
 }
 
-/* Responsive Design */
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .player-card {
+        animation: fadeInScale 0.4s ease forwards;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
 @media (max-width: 639px) {
     .draw-container {
         padding: 1.5rem 0.75rem 2rem;
@@ -503,20 +592,53 @@
         letter-spacing: 1px;
     }
 
-    .match-details-form {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-        gap: 0.75rem;
+    .match-box {
+        padding: 0 0.75rem 0.875rem 0.75rem;
     }
 
-    .form-group label {
-        font-size: 0.75rem;
+    .match-info-title {
+        font-size: 2rem;
+        margin: 0 0 0.75rem 0;
+        letter-spacing: 1px;
     }
 
-    .form-group input,
-    .form-group select {
-        padding: 0.625rem;
-        font-size: 0.875rem;
+    .match-row {
+        padding: 0.4rem 0.875rem;
+        font-size: 0.9rem;
+    }
+
+    .match-row::before {
+        width: 0.7rem;
+        height: 0.7rem;
+        margin-right: 0.5rem;
+    }
+
+    .match-row label {
+        font-size: 0.85rem;
+        min-width: 80px;
+    }
+
+    .match-row input,
+    .match-row select {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.85rem;
+        height: 34px;
+    }
+
+    .match-value {
+        font-size: 0.85rem;
+        padding: 0.35rem 0.5rem;
+    }
+
+    .gap-control button {
+        width: 28px;
+        height: 28px;
+        font-size: 1.1rem;
+    }
+
+    .gap-control span {
+        font-size: 0.85rem;
+        min-width: 30px;
     }
 
     .players-grid {
@@ -549,19 +671,6 @@
 
     .teams-container {
         gap: 0.75rem;
-    }
-
-    .teams-balance-info {
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .balance-label {
-        font-size: 0.75rem;
-    }
-
-    .balance-value {
-        font-size: 1rem;
     }
 
     .team-card {
@@ -619,10 +728,6 @@
         padding: 2.5rem;
     }
 
-    .match-details-form {
-        padding: 2rem;
-    }
-
     .players-grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 1rem;
@@ -634,10 +739,6 @@
 
     .teams-container {
         gap: 1.5rem;
-    }
-
-    .teams-balance-info {
-        margin-bottom: 1.5rem;
     }
 
     .team-card {
@@ -660,7 +761,10 @@
     }
 }
 
-/* Accessibility */
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -668,29 +772,5 @@
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
-    }
-}
-
-.player-card:focus-visible,
-.generate-button:focus-visible {
-    outline: 2px solid rgba(16, 185, 129, 0.6);
-    outline-offset: 2px;
-}
-
-/* Smooth entrance animations for player cards */
-@media (prefers-reduced-motion: no-preference) {
-    .player-card {
-        animation: fadeInScale 0.4s ease forwards;
-    }
-
-    @keyframes fadeInScale {
-        from {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
     }
 }
