@@ -245,6 +245,147 @@
 }
 
 /* ==========================================================================
+   Temporary Player Card
+   ========================================================================== */
+
+.temp-player-card-trigger {
+    background: rgba(10, 10, 10, 0.4);
+    border: 2px dashed rgba(16, 185, 129, 0.3);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.temp-player-card-trigger:hover {
+    background: rgba(6, 78, 59, 0.2);
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+}
+
+.temp-player-card-trigger .player-card-name {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.temp-player-card-trigger .player-card-value {
+    color: rgba(16, 185, 129, 0.7);
+    font-size: 1.5rem;
+}
+
+.temp-player-card-form {
+    background: rgba(6, 78, 59, 0.25);
+    border: 2px solid rgba(16, 185, 129, 0.4);
+    border-radius: 0.75rem;
+    padding: 0.65rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    position: relative;
+    overflow: visible;
+    cursor: default;
+}
+
+.temp-player-input {
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(10, 10, 10, 0.5);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.temp-player-input:focus {
+    outline: none;
+    border-color: rgba(16, 185, 129, 0.7);
+    background: rgba(10, 10, 10, 0.7);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.temp-player-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.temp-player-name {
+    text-align: center;
+    font-weight: 600;
+}
+
+.temp-player-value {
+    text-align: center;
+    font-weight: 700;
+    color: rgba(16, 185, 129, 1);
+}
+
+.temp-player-input[type="number"]::-webkit-outer-spin-button,
+.temp-player-input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.temp-player-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.temp-player-actions {
+    display: flex;
+    gap: 0.35rem;
+    width: 100%;
+}
+
+.temp-player-btn {
+    flex: 1;
+    padding: 0.35rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.temp-player-add {
+    background: rgba(16, 185, 129, 0.3);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: rgba(16, 185, 129, 1);
+}
+
+.temp-player-add:hover:not(:disabled) {
+    background: rgba(16, 185, 129, 0.5);
+    border-color: rgba(16, 185, 129, 0.8);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.temp-player-add:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.temp-player-btn:active {
+    transform: scale(0.95);
+}
+
+/* ==========================================================================
    Generate Button Section
    ========================================================================== */
 
@@ -742,7 +883,6 @@
         flex: 1;
         font-size: 0.8125rem;
     }
-
     .player-card-value {
         flex-shrink: 0;
         font-size: 0.875rem;
@@ -834,9 +974,6 @@
         gap: 1rem;
     }
 
-    .player-card {
-        padding: 1.25rem;
-    }
 
     .teams-container {
         gap: 1.5rem;
@@ -874,4 +1011,10 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+
+.player-card.temp-player-card-form {
+    padding: 0.3rem;
+    gap: 0.25rem;
 }

@@ -158,7 +158,100 @@ const PlayerCard = ({ player, isSelected, onToggle }) => (
     </button>
 );
 
-const PlayersGrid = ({ players, selectedPlayers, onToggle }) => (
+const TempPlayerCard = ({ onAdd }) => {
+    const [tempName, setTempName] = useState("");
+    const [tempValue, setTempValue] = useState("");
+    const [isAdding, setIsAdding] = useState(false);
+
+    const handleAdd = () => {
+        const value = parseFloat(tempValue);
+        if (tempName.trim() && !isNaN(value) && value >= 0) {
+            onAdd({
+                id: `temp-${Date.now()}`,
+                name: tempName.trim(),
+                value: value,
+                isTemporary: true
+            });
+            setTempName("");
+            setTempValue("");
+            setIsAdding(false);
+        }
+    };
+
+    const handleKeyPress = (e, field) => {
+        if (e.key === 'Enter') {
+            if (field === 'name' && tempName.trim()) {
+                document.getElementById('temp-value-input')?.focus();
+            } else if (field === 'value') {
+                handleAdd();
+            }
+        }
+    };
+
+    if (!isAdding) {
+        return (
+            <button
+                className="player-card temp-player-card-trigger"
+                onClick={() => setIsAdding(true)}
+            >
+                <h4 className="player-card-name">Temporary Player</h4>
+                <span className="player-card-value">+</span>
+            </button>
+        );
+    }
+
+    return (
+        <div className="player-card temp-player-card-form">
+            <input
+                type="text"
+                className="temp-player-input temp-player-name"
+                placeholder="Name"
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                onKeyPress={(e) => handleKeyPress(e, 'name')}
+                autoFocus
+            />
+            <input
+                id="temp-value-input"
+                type="text"
+                inputMode="decimal"
+                className="temp-player-input temp-player-value"
+                placeholder="Value"
+                value={tempValue}
+                onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9.,]/g, ''); // garde seulement chiffres et . ou ,
+                    setTempValue(val);
+                }}
+                onKeyDown={(e) => {
+                    if (
+                        !/[0-9.,]/.test(e.key) && // autorise chiffres et séparateurs
+                        e.key !== "Backspace" &&
+                        e.key !== "Delete" &&
+                        e.key !== "ArrowLeft" &&
+                        e.key !== "ArrowRight" &&
+                        e.key !== "Tab"
+                    ) {
+                        e.preventDefault(); // empêche toute autre touche
+                    }
+                }}
+                onKeyPress={(e) => handleKeyPress(e, 'value')}
+                step="0.1"
+                min="0"
+            />
+            <div className="temp-player-actions">
+                <button
+                    className="temp-player-btn temp-player-add"
+                    onClick={handleAdd}
+                    disabled={!tempName.trim() || !tempValue || isNaN(parseFloat(tempValue))}
+                >
+                    ✓
+                </button>
+            </div>
+        </div>
+    );
+};
+
+const PlayersGrid = ({ players, selectedPlayers, onToggle, onAddTemp }) => (
     <div className="players-grid">
         {players.map((player) => (
             <PlayerCard
@@ -168,6 +261,7 @@ const PlayersGrid = ({ players, selectedPlayers, onToggle }) => (
                 onToggle={() => onToggle(player)}
             />
         ))}
+        <TempPlayerCard onAdd={onAddTemp} />
     </div>
 );
 
@@ -209,7 +303,6 @@ const TeamCard = ({ team, index }) => {
 
 const ScoreInput = ({ scoreTeam1, scoreTeam2, onChange }) => {
     const handleFocus = (e) => {
-        // Sélectionne automatiquement tout le texte quand on clique dans la case
         e.target.select();
     };
 
@@ -220,26 +313,27 @@ const ScoreInput = ({ scoreTeam1, scoreTeam2, onChange }) => {
 
     return (
         <div className="score-input-wrapper">
-                <input
-                    type="number"
-                    min="0"
-                    value={scoreTeam1}
-                    onFocus={handleFocus}
-                    onChange={(e) => handleChange("scoreTeam1", e.target.value)}
-                    className="score-input score-input-team1"
-                />
-                <span className="score-separator">-</span>
-                <input
-                    type="number"
-                    min="0"
-                    value={scoreTeam2}
-                    onFocus={handleFocus}
-                    onChange={(e) => handleChange("scoreTeam2", e.target.value)}
-                    className="score-input score-input-team2"
-                />
+            <input
+                type="number"
+                min="0"
+                value={scoreTeam1}
+                onFocus={handleFocus}
+                onChange={(e) => handleChange("scoreTeam1", e.target.value)}
+                className="score-input score-input-team1"
+            />
+            <span className="score-separator">-</span>
+            <input
+                type="number"
+                min="0"
+                value={scoreTeam2}
+                onFocus={handleFocus}
+                onChange={(e) => handleChange("scoreTeam2", e.target.value)}
+                className="score-input score-input-team2"
+            />
         </div>
     );
 };
+
 const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disabled }) => (
     <div className="save-match-section">
         <ScoreInput
@@ -335,6 +429,12 @@ function Draw() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    // Add temporary player
+    const addTemporaryPlayer = useCallback((tempPlayer) => {
+        setPlayers((prev) => [...prev, tempPlayer]);
+        setSelectedPlayers((prev) => [...prev, tempPlayer]);
+    }, []);
 
     // Toggle player selection
     const togglePlayerSelection = useCallback((player) => {
@@ -491,6 +591,7 @@ function Draw() {
                                 players={players}
                                 selectedPlayers={selectedPlayers}
                                 onToggle={togglePlayerSelection}
+                                onAddTemp={addTemporaryPlayer}
                             />
 
                             <GenerateSection
