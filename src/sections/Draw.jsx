@@ -181,7 +181,8 @@ const TempPlayerCard = ({ onAdd }) => {
     }, [isAdding]);
 
     const handleAdd = () => {
-        const value = parseFloat(tempValue);
+        const normalizedValue = tempValue.replace(",", ".");
+        const value = parseFloat(normalizedValue);
         if (tempName.trim() && !isNaN(value) && value >= 0) {
             onAdd({
                 id: `temp-${Date.now()}`,
