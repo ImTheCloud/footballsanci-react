@@ -1,12 +1,24 @@
-import React from 'react';
-import './MatchPanel.css';
+import React, { useEffect, useMemo, useRef } from "react";
+import "./MatchPanel.css";
 
-// Constants for location options and gap control steps
-const LOCATIONS = ['Fit Five', 'Halle'];
+const LOCATIONS = ["Fit Five", "Halle"];
 const GAP_STEP = 0.1;
 const MIN_GAP = 0;
 
-// A row within the match panel form. Renders a label and a control.
+// ---- date helpers (local time) ----
+const pad = (n) => String(n).padStart(2, "0");
+const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+const getTodayISO = () => toISO(new Date());
+const getNextSaturdayISO = () => {
+    const t = new Date();
+    const diff = ((6 - t.getDay()) % 7) || 7; // next Sat; if Sat -> +7
+    const d = new Date(t);
+    d.setDate(t.getDate() + diff);
+    return toISO(d);
+};
+
+// ---- UI atoms ----
 const MatchInfoRow = ({ label, children }) => (
     <div className="match-row">
         <label>{label}:</label>
@@ -14,28 +26,26 @@ const MatchInfoRow = ({ label, children }) => (
     </div>
 );
 
-// Gap control with increment and decrement buttons and the current value.
 const GapControl = ({ value, onChange }) => (
     <div className="gap-control">
         <button
             type="button"
-            onClick={() => onChange(Math.max(MIN_GAP, parseFloat((value - GAP_STEP).toFixed(1))))}
             aria-label="Decrease gap"
+            onClick={() => onChange(Math.max(MIN_GAP, +(value - GAP_STEP).toFixed(1)))}
         >
             −
         </button>
-        <span>{value.toFixed(1)}</span>
+        <span>{Number(value).toFixed(1)}</span>
         <button
             type="button"
-            onClick={() => onChange(parseFloat((value + GAP_STEP).toFixed(1)))}
             aria-label="Increase gap"
+            onClick={() => onChange(+(value + GAP_STEP).toFixed(1))}
         >
             +
         </button>
     </div>
 );
 
-// Wrapper component for grouping match info fields with a title.
 const MatchBox = ({ title, children }) => (
     <div className="match-box">
         <h3 className="match-info-title">{title}</h3>
@@ -43,53 +53,65 @@ const MatchBox = ({ title, children }) => (
     </div>
 );
 
-/**
- * MatchPanel renders a form for entering match details such as date, time,
- * location and allowable gap between team totals. It exposes the form state
- * via matchDetails and onChange props.
- */
-const MatchPanel = ({ matchDetails, onChange }) => (
-    <MatchBox title="Live Draw">
-        <MatchInfoRow label="Date">
-            <input
-                type="date"
-                value={matchDetails.date}
-                onChange={(e) => onChange('date', e.target.value)}
-            />
-        </MatchInfoRow>
-        <MatchInfoRow label="Start">
-            <input
-                type="time"
-                value={matchDetails.startTime}
-                onChange={(e) => onChange('startTime', e.target.value)}
-            />
-        </MatchInfoRow>
-        <MatchInfoRow label="End">
-            <input
-                type="time"
-                value={matchDetails.endTime}
-                onChange={(e) => onChange('endTime', e.target.value)}
-            />
-        </MatchInfoRow>
-        <MatchInfoRow label="Location">
-            <select
-                value={matchDetails.location}
-                onChange={(e) => onChange('location', e.target.value)}
-            >
-                {LOCATIONS.map((loc) => (
-                    <option key={loc} value={loc}>
-                        {loc}
-                    </option>
-                ))}
-            </select>
-        </MatchInfoRow>
-        <MatchInfoRow label="Gap">
-            <GapControl
-                value={matchDetails.gap}
-                onChange={(val) => onChange('gap', val)}
-            />
-        </MatchInfoRow>
-    </MatchBox>
-);
+// ---- main component ----
+const MatchPanel = ({ matchDetails, onChange }) => {
+    const nextSaturday = useMemo(getNextSaturdayISO, []);
+    const today = useMemo(getTodayISO, []);
+    const didInit = useRef(false);
+
+    // Set default to next Saturday once on mount (if empty or today)
+    useEffect(() => {
+        if (didInit.current) return;
+        const current = matchDetails?.date;
+        if (!current || current === today) onChange("date", nextSaturday);
+        didInit.current = true;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return (
+        <MatchBox title="Live Draw">
+            <MatchInfoRow label="Date">
+                <input
+                    type="date"
+                    value={matchDetails.date || nextSaturday}
+                    onChange={(e) => onChange("date", e.target.value)}
+                />
+            </MatchInfoRow>
+
+            <MatchInfoRow label="Start">
+                <input
+                    type="time"
+                    value={matchDetails.startTime}
+                    onChange={(e) => onChange("startTime", e.target.value)}
+                />
+            </MatchInfoRow>
+
+            <MatchInfoRow label="End">
+                <input
+                    type="time"
+                    value={matchDetails.endTime}
+                    onChange={(e) => onChange("endTime", e.target.value)}
+                />
+            </MatchInfoRow>
+
+            <MatchInfoRow label="Location">
+                <select
+                    value={matchDetails.location}
+                    onChange={(e) => onChange("location", e.target.value)}
+                >
+                    {LOCATIONS.map((loc) => (
+                        <option key={loc} value={loc}>
+                            {loc}
+                        </option>
+                    ))}
+                </select>
+            </MatchInfoRow>
+
+            <MatchInfoRow label="Gap">
+                <GapControl value={matchDetails.gap} onChange={(v) => onChange("gap", v)} />
+            </MatchInfoRow>
+        </MatchBox>
+    );
+};
 
 export default MatchPanel;
