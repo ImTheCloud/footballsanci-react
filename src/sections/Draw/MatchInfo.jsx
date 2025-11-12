@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import './Teams.css';
+import './MatchInfo.css';
 
 // Compute the total value of a team based on its players.
 const calculateTeamTotal = (team) =>
@@ -197,12 +197,12 @@ const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disab
 );
 
 /**
- * Teams displays the match information, generated teams, and score input/save
+ * MatchInfo displays the match information, generated teams, and score input/save
  * controls. It uses MatchInfoDisplay to show match metadata and TeamCard
  * components to render each team. When the user is logged in, the save
  * controls are displayed.
  */
-const Teams = ({
+const MatchInfo = ({
                    teams,
                    matchData,
                    scoreTeam1,
@@ -230,4 +230,4 @@ const Teams = ({
     </div>
 );
 
-export default Teams;
+export default MatchInfo;

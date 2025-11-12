@@ -4,9 +4,9 @@ import { db } from "../../services/firebase";
 import { useSeason } from "../../components/SeasonContext.jsx";
 import { useAuth } from "../../components/AuthContext.jsx";
 import "./Draw.css";
-import MatchPanel from "./MatchPanel.jsx";
+import LiveDraw from "./LiveDraw.jsx";
 import Players from "./Players.jsx";
-import Teams from "./Teams.jsx";
+import MatchInfo from "./MatchInfo.jsx";
 
 // Constants
 const INITIAL_MATCH_DETAILS = {
@@ -300,7 +300,7 @@ function Draw() {
         <div className="draw-container">
             {currentUser && (
                 <>
-                    <MatchPanel
+                    <LiveDraw
                         matchDetails={matchDetails}
                         onChange={handleMatchDetailsChange}
                     />
@@ -328,7 +328,7 @@ function Draw() {
             {/* No loading animation overlay is shown during team generation */}
             {hasTeams && (
                 <div ref={teamsRef}>
-                    <Teams
+                    <MatchInfo
                         teams={teams}
                         matchData={liveMatch}
                         scoreTeam1={scoreTeam1}

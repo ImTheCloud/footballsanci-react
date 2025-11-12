@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import "./MatchPanel.css";
+import "./LiveDraw.css";
 
 const LOCATIONS = ["Fit Five", "Halle"];
 const GAP_STEP = 0.1;
@@ -54,7 +54,7 @@ const MatchBox = ({ title, children }) => (
 );
 
 // ---- main component ----
-const MatchPanel = ({ matchDetails, onChange }) => {
+const LiveDraw = ({ matchDetails, onChange }) => {
     const nextSaturday = useMemo(getNextSaturdayISO, []);
     const today = useMemo(getTodayISO, []);
     const didInit = useRef(false);
@@ -114,4 +114,4 @@ const MatchPanel = ({ matchDetails, onChange }) => {
     );
 };
 
-export default MatchPanel;
+export default LiveDraw;
