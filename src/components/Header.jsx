@@ -5,46 +5,41 @@ function Header() {
     const { seasons, selectedSeason, setSelectedSeason, loadingSeasons } = useSeason();
     const [activeSection, setActiveSection] = useState("ranking");
 
-    const scrollTo = (id) => {
-        const element = document.getElementById(id);
-        if (element) {
-            const headerOffset = 80; // Hauteur de ton header
-            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-            const offsetPosition = elementPosition - headerOffset;
+    const sections = ["ranking", "draw", "history"];
 
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-            });
-        }
+    const scrollTo = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const headerOffset = 80; // header height
+        const y = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
         setActiveSection(id);
     };
 
     useEffect(() => {
-        const sections = ["ranking", "draw","history"];
-        const handleScroll = () => {
-            const scrollPos = window.scrollY + 80; // offset pour le header
+        const onScroll = () => {
+            const pos = window.scrollY + 80;
             for (let i = sections.length - 1; i >= 0; i--) {
-                const section = document.getElementById(sections[i]);
-                if (section && scrollPos >= section.offsetTop) {
+                const s = document.getElementById(sections[i]);
+                if (s && pos >= s.offsetTop) {
                     setActiveSection(sections[i]);
                     break;
                 }
             }
         };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", onScroll);
+        return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
     const getShortLabel = (season) => {
-        const match = season.match(/\d+/);
-        return match ? `Season ${match[0]}` : season;
+        const m = season?.match(/\d+/);
+        return m ? `Season ${m[0]}` : season || "Season";
     };
 
     return (
         <header style={styles.header}>
-            <div style={styles.leftContainer}>
-                <div style={styles.customSelectLabel}>{getShortLabel(selectedSeason)}</div>
+            {/* Left: Season selector (simple, native, auto-width) */}
+            <div style={styles.left}>
                 <select
                     style={styles.select}
                     value={selectedSeason}
@@ -52,26 +47,28 @@ function Header() {
                     disabled={loadingSeasons}
                 >
                     {seasons.map((s) => (
-                        <option key={s} value={s}>
-                            {s}
+                        <option key={s} value={s} style={styles.option}>
+                            {getShortLabel(s)}
                         </option>
                     ))}
                 </select>
             </div>
-            <div style={styles.rightContainer}>
-                {["ranking", "draw","history"].map((sec) => (
+
+            {/* Right: Nav buttons */}
+            <nav style={styles.right}>
+                {sections.map((sec) => (
                     <button
                         key={sec}
                         style={{
                             ...styles.navBtn,
-                            ...(activeSection === sec ? styles.activeNavBtn : {}),
+                            ...(activeSection === sec ? styles.navBtnActive : {}),
                         }}
                         onClick={() => scrollTo(sec)}
                     >
                         {sec.charAt(0).toUpperCase() + sec.slice(1)}
                     </button>
                 ))}
-            </div>
+            </nav>
         </header>
     );
 }
@@ -92,55 +89,38 @@ const styles = {
         borderBottom: "1px solid rgba(255,255,255,0.08)",
         zIndex: 1000,
     },
-    leftContainer: {
+    left: {
         display: "flex",
         alignItems: "center",
-        gap: "0.3rem",
-        margin: 0,
-        padding: 0,
-        position: "relative",
+        paddingLeft: "10px",
     },
-    rightContainer: {
+    right: {
         display: "flex",
         alignItems: "center",
         gap: "0.6rem",
-        paddingRight: "1.2rem",
+        paddingRight: "0.6rem",
     },
-    customSelectLabel: {
-        position: "absolute",
-        left: 10,
-        top: "50%",
-        transform: "translateY(-50%)",
-        pointerEvents: "none",
-        color: "#fff",
-        fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
-        fontWeight: 500,
-        userSelect: "none",
-        zIndex: 10,
-        whiteSpace: "nowrap",
-    },
+    // Native select kept simple so the arrow is right next to the text
     select: {
+        flex: "0 0 auto",
+        width: "auto",
+        color: "#fff",
         background: "transparent",
         border: "none",
-        borderRadius: "8px",
-        padding: "12px 32px 12px 0px",
+        outline: "none",
         fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
         fontWeight: 500,
+        lineHeight: 1.2,
         cursor: "pointer",
+        padding: "8px 22px 8px 6px", // right padding for the arrow
         appearance: "none",
         WebkitAppearance: "none",
         MozAppearance: "none",
         backgroundImage:
             "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 6\" fill=\"white\"><path d=\"M0 0l5 6 5-6H0z\"/></svg>')",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "right 0px center",
+        backgroundPosition: "right 6px center", // arrow close to text
         backgroundSize: "10px 6px",
-        transition: "opacity 0.2s ease",
-        lineHeight: "1.2",
-        color: "#000",
-        "::after": {
-            color: "#fff",
-        },
     },
     option: {
         color: "#000",
@@ -160,9 +140,9 @@ const styles = {
         padding: "4px 6px",
         whiteSpace: "nowrap",
         textDecoration: "none",
-        lineHeight: "1.2",
+        lineHeight: 1.2,
     },
-    activeNavBtn: {
+    navBtnActive: {
         color: "#10B981",
         opacity: 1,
         fontWeight: 600,

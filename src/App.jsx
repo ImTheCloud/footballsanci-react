@@ -3,7 +3,6 @@ import { AuthProvider } from "./components/AuthContext.jsx";
 import { SeasonProvider } from "./components/SeasonContext.jsx";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import BackgroundFx from "./components/BackgroundFx";
 
 import Ranking from "./sections/Ranking";
 import History from "./sections/History";
@@ -13,7 +12,6 @@ function App() {
     return (
         <AuthProvider>
             <SeasonProvider>
-                <BackgroundFx />
                 <Header />
                 <main style={{ position: "relative", zIndex: 1 }}>
                     <section id="ranking"><Ranking /></section>
