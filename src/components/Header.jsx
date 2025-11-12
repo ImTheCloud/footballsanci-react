@@ -137,10 +137,7 @@ const styles = {
         backgroundSize: "10px 6px",
         transition: "opacity 0.2s ease",
         lineHeight: "1.2",
-        color: "#000",
-        "::after": {
-            color: "#fff",
-        },
+        color: "#fff",
     },
     option: {
         color: "#000",

@@ -11,7 +11,7 @@ const INITIAL_MATCH_DETAILS = {
     startTime: "21:00",
     endTime: "22:00",
     location: "Fit Five",
-    gap: 1.5,
+    gap: 1,
 };
 
 const LOCATIONS = ["Fit Five", "Halle"];
