@@ -36,22 +36,30 @@ function Header() {
         return m ? `Season ${m[0]}` : season || "Season";
     };
 
+    const seasonReady = !loadingSeasons && !!selectedSeason && seasons.length > 0;
+
     return (
         <header style={styles.header}>
-            {/* Left: Season selector (simple, native, auto-width) */}
+            {/* Left: Season selector */}
             <div style={styles.left}>
-                <select
-                    style={styles.select}
-                    value={selectedSeason}
-                    onChange={(e) => setSelectedSeason(e.target.value)}
-                    disabled={loadingSeasons}
-                >
-                    {seasons.map((s) => (
-                        <option key={s} value={s} style={styles.option}>
-                            {getShortLabel(s)}
-                        </option>
-                    ))}
-                </select>
+                {seasonReady ? (
+                    <select
+                        style={styles.select}
+                        value={selectedSeason}
+                        onChange={(e) => setSelectedSeason(e.target.value)}
+                    >
+                        {seasons.map((s) => (
+                            <option key={s} value={s} style={styles.option}>
+                                {getShortLabel(s)}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    // Placeholder visible pendant le chargement Firebase
+                    <div style={styles.seasonPlaceholder}>
+                        Season…
+                    </div>
+                )}
             </div>
 
             {/* Right: Nav buttons */}
@@ -100,7 +108,7 @@ const styles = {
         gap: "0.6rem",
         paddingRight: "0.6rem",
     },
-    // Native select kept simple so the arrow is right next to the text
+    // Native select
     select: {
         flex: "0 0 auto",
         width: "auto",
@@ -119,12 +127,22 @@ const styles = {
         backgroundImage:
             "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 6\" fill=\"white\"><path d=\"M0 0l5 6 5-6H0z\"/></svg>')",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "right 6px center", // arrow close to text
+        backgroundPosition: "right 6px center",
         backgroundSize: "10px 6px",
     },
     option: {
         color: "#000",
         backgroundColor: "#fff",
+    },
+    // Placeholder qui garde la même taille visuelle que le select
+    seasonPlaceholder: {
+        flex: "0 0 auto",
+        padding: "8px 22px 8px 6px",
+        fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
+        fontWeight: 500,
+        lineHeight: 1.2,
+        color: "#fff",
+        whiteSpace: "nowrap",
     },
     navBtn: {
         background: "transparent",
