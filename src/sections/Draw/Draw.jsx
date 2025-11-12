@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { useSeason } from "../../components/SeasonContext.jsx";
@@ -78,6 +78,9 @@ function Draw() {
     const [scoreTeam1, setScoreTeam1] = useState(0);
     const [scoreTeam2, setScoreTeam2] = useState(0);
 
+    // Ref to the teams container; used to scroll to the end of the teams section
+    const teamsRef = useRef(null);
+
     // Fetch data from Firebase
     const fetchData = useCallback(async () => {
         if (!selectedSeason) return;
@@ -122,6 +125,18 @@ function Draw() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    // Scroll to the end of the teams section whenever two teams have been generated.
+    // This effect runs every time `teams` changes and ensures the bottom of the
+    // teams cards is visible without scrolling past other sections of the page.
+    useEffect(() => {
+        if (teams.length === 2 && teamsRef.current) {
+            // Allow the DOM to update before scrolling
+            setTimeout(() => {
+                teamsRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+        }
+    }, [teams, teamsRef]);
 
     // Add temporary player
     const addTemporaryPlayer = useCallback((tempPlayer) => {
@@ -209,6 +224,13 @@ function Draw() {
         }
     }, [selectedPlayers, matchDetails, generateBalancedTeams, selectedSeason]);
 
+    // Simple wrapper that triggers team generation immediately. If there
+    // are not enough selected players, it does nothing.
+    const handleGenerateTeams = useCallback(() => {
+        if (selectedPlayers.length < 2) return;
+        generateTeams();
+    }, [selectedPlayers, generateTeams]);
+
     // Handle score change
     const handleScoreChange = useCallback((field, value) => {
         if (field === "scoreTeam1") {
@@ -290,7 +312,7 @@ function Draw() {
                             <GenerateSection
                                 selectedCount={selectedPlayers.length}
                                 totalCount={players.length}
-                                onGenerate={generateTeams}
+                                onGenerate={handleGenerateTeams}
                                 disabled={!canGenerateTeams}
                             />
                         </>
@@ -298,16 +320,19 @@ function Draw() {
                 </>
             )}
 
+            {/* No loading animation overlay is shown during team generation */}
             {hasTeams && (
-                <Teams
-                    teams={teams}
-                    matchData={liveMatch}
-                    scoreTeam1={scoreTeam1}
-                    scoreTeam2={scoreTeam2}
-                    onScoreChange={handleScoreChange}
-                    onSaveMatch={saveMatch}
-                    currentUser={currentUser}
-                />
+                <div ref={teamsRef}>
+                    <Teams
+                        teams={teams}
+                        matchData={liveMatch}
+                        scoreTeam1={scoreTeam1}
+                        scoreTeam2={scoreTeam2}
+                        onScoreChange={handleScoreChange}
+                        onSaveMatch={saveMatch}
+                        currentUser={currentUser}
+                    />
+                </div>
             )}
 
             {!currentUser && !hasTeams && <EmptyState />}
