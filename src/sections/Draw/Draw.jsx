@@ -4,11 +4,11 @@ import { db } from "../../services/firebase";
 import { useSeason } from "../../components/SeasonContext.jsx";
 import { useAuth } from "../../components/AuthContext.jsx";
 import "./Draw.css";
-import LiveDraw from "./LiveDraw.jsx";
+import NextMatch from "./NextMatch.jsx";
 import Players from "./Players.jsx";
 import MatchInfo from "./MatchInfo.jsx";
 
-// Constants
+// Etat initial du match
 const INITIAL_MATCH_DETAILS = {
     date: new Date().toISOString().split("T")[0],
     startTime: "21:00",
@@ -17,8 +17,7 @@ const INITIAL_MATCH_DETAILS = {
     gap: 1,
 };
 
-
-// Utility Functions
+// Formatage de date JJ-MM-AAAA
 const formatDateToJJMMAA = (isoDate) => {
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, "0");
@@ -27,44 +26,10 @@ const formatDateToJJMMAA = (isoDate) => {
     return `${day}-${month}-${year}`;
 };
 
+// Calcule le total d’une équipe
 const calculateTeamTotal = (team) =>
     team.reduce((sum, player) => sum + (player.value || 0), 0);
 
-// Components
-const LoadingState = () => (
-    <div className="draw-container">
-        <div className="loading-state">
-            <div className="loading-spinner" />
-            <p>Loading...</p>
-        </div>
-    </div>
-);
-
-const EmptyState = () => (
-    <div className="empty-state">
-        <div className="empty-state-icon">⚽</div>
-        <p>No live match available. Check back soon!</p>
-    </div>
-);
-
-
-const GenerateSection = ({ selectedCount, totalCount, onGenerate, disabled }) => (
-    <div className="generate-section">
-        <div className="selected-counter">
-            <span className="selected-counter-number">{selectedCount}</span> / {totalCount} players selected
-        </div>
-        <button
-            className="generate-button"
-            onClick={onGenerate}
-            disabled={disabled}
-        >
-            Generate Teams
-        </button>
-    </div>
-);
-
-
-// Main Component
 function Draw() {
     const { selectedSeason } = useSeason();
     const { currentUser } = useAuth();
@@ -78,29 +43,27 @@ function Draw() {
     const [scoreTeam1, setScoreTeam1] = useState(0);
     const [scoreTeam2, setScoreTeam2] = useState(0);
 
-    // Ref to the teams container; used to scroll to the end of the teams section
+    // Références pour l’auto-scroll
     const teamsRef = useRef(null);
     const shouldScrollToTeams = useRef(false);
 
-    // Fetch data from Firebase
+    // Chargement des données
     const fetchData = useCallback(async () => {
         if (!selectedSeason) return;
 
         setLoading(true);
         try {
-            // Fetch players if user is logged in
             if (currentUser) {
                 const playersSnapshot = await getDocs(
                     collection(db, `seasons/${selectedSeason}/players`)
                 );
                 const playersList = playersSnapshot.docs.map((doc) => ({
                     id: doc.id,
-                    ...doc.data()
+                    ...doc.data(),
                 }));
                 setPlayers(playersList);
             }
 
-            // Fetch live match
             const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
             const liveMatchSnapshot = await getDoc(liveMatchRef);
 
@@ -127,27 +90,23 @@ function Draw() {
         fetchData();
     }, [fetchData]);
 
-    // Scroll to the end of the teams section whenever two teams have been generated.
-    // This effect runs every time `teams` changes and ensures the bottom of the
-    // teams cards is visible without scrolling past other sections of the page.
+    // Auto-scroll lorsqu’on génère les équipes
     useEffect(() => {
         if (shouldScrollToTeams.current && teams.length === 2 && teamsRef.current) {
-            // Allow the DOM to update before scrolling
             setTimeout(() => {
-                teamsRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                teamsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
             }, 100);
-            // reset the flag so we don't auto-scroll on initial load or subsequent fetches
             shouldScrollToTeams.current = false;
         }
     }, [teams]);
 
-    // Add temporary player
+    // Gestion des joueurs temporaires
     const addTemporaryPlayer = useCallback((tempPlayer) => {
         setPlayers((prev) => [...prev, tempPlayer]);
         setSelectedPlayers((prev) => [...prev, tempPlayer]);
     }, []);
 
-    // Toggle player selection
+    // Sélection / désélection de joueurs
     const togglePlayerSelection = useCallback((player) => {
         setSelectedPlayers((prev) =>
             prev.find((p) => p.id === player.id)
@@ -156,7 +115,7 @@ function Draw() {
         );
     }, []);
 
-    // Generate balanced teams algorithm
+    // Algorithme de génération équilibrée
     const generateBalancedTeams = useCallback((playersList) => {
         const MAX_DIFFERENCE = matchDetails.gap;
         let bestTeam1 = [];
@@ -191,14 +150,13 @@ function Draw() {
         return [bestTeam1, bestTeam2];
     }, [matchDetails.gap]);
 
-    // Generate and save teams to Live
+    // Génère et enregistre les équipes
     const generateTeams = useCallback(async () => {
         if (selectedPlayers.length < 2) return;
 
         const [team1, team2] = generateBalancedTeams(selectedPlayers);
         setTeams([team1, team2]);
 
-        // Reset scores when generating new teams
         setScoreTeam1(0);
         setScoreTeam2(0);
 
@@ -207,8 +165,8 @@ function Draw() {
             const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
 
             const matchData = {
-                team1: team1.map(p => ({ name: p.name, value: p.value || 0 })),
-                team2: team2.map(p => ({ name: p.name, value: p.value || 0 })),
+                team1: team1.map((p) => ({ name: p.name, value: p.value || 0 })),
+                team2: team2.map((p) => ({ name: p.name, value: p.value || 0 })),
                 date: formattedDate,
                 startTime: matchDetails.startTime,
                 endTime: matchDetails.endTime,
@@ -219,24 +177,20 @@ function Draw() {
             };
 
             await setDoc(liveMatchRef, matchData);
-
-            // Update local state
             setLiveMatch(matchData);
         } catch (error) {
             console.error("Error saving live match:", error);
         }
     }, [selectedPlayers, matchDetails, generateBalancedTeams, selectedSeason]);
 
-    // Simple wrapper that triggers team generation immediately. If there
-    // are not enough selected players, it does nothing.
+    // Gestion du clic sur le bouton « Generate Teams »
     const handleGenerateTeams = useCallback(() => {
         if (selectedPlayers.length < 2) return;
-        // set flag so the next teams update scrolls into view
         shouldScrollToTeams.current = true;
         generateTeams();
     }, [selectedPlayers, generateTeams]);
 
-    // Handle score change
+    // Mise à jour des scores
     const handleScoreChange = useCallback((field, value) => {
         if (field === "scoreTeam1") {
             setScoreTeam1(value);
@@ -245,12 +199,11 @@ function Draw() {
         }
     }, []);
 
-    // Save match permanently and delete Live
+    // Sauvegarde du match et suppression de l’état Live
     const saveMatch = useCallback(async () => {
         if (!liveMatch) return;
 
         try {
-            // Save to permanent collection with date as ID
             const formattedDate = liveMatch.date;
             const matchRef = doc(db, `seasons/${selectedSeason}/matches/${formattedDate}`);
 
@@ -262,11 +215,9 @@ function Draw() {
 
             await setDoc(matchRef, finalMatchData);
 
-            // Delete Live match
             const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
             await deleteDoc(liveMatchRef);
 
-            // Clear local state
             setTeams([]);
             setLiveMatch(null);
             setSelectedPlayers([]);
@@ -279,7 +230,7 @@ function Draw() {
         }
     }, [liveMatch, selectedSeason, scoreTeam1, scoreTeam2]);
 
-    // Handle match details changes
+    // Mise à jour des détails de match
     const handleMatchDetailsChange = useCallback((field, value) => {
         setMatchDetails((prev) => ({ ...prev, [field]: value }));
 
@@ -288,9 +239,16 @@ function Draw() {
         }
     }, []);
 
-    // Render
+    // Si chargement, affichage d’une attente
     if (loading) {
-        return <LoadingState />;
+        return (
+            <div className="draw-container">
+                <div className="loading-state">
+                    <div className="loading-spinner" />
+                    <p>Loading...</p>
+                </div>
+            </div>
+        );
     }
 
     const hasTeams = teams.length === 2;
@@ -300,32 +258,29 @@ function Draw() {
         <div className="draw-container">
             {currentUser && (
                 <>
-                    <LiveDraw
+                    <h2 className="section-title">Live Draw</h2>
+                    {/* Affiche toujours les joueurs en premier */}
+                    {players.length > 0 && (
+                        <Players
+                            players={players}
+                            selectedPlayers={selectedPlayers}
+                            onToggle={togglePlayerSelection}
+                            onAddTemp={addTemporaryPlayer}
+                        />
+                    )}
+
+                    {/* NextMatch avec le bouton de génération inclus et situé sous les joueurs */}
+                    <NextMatch
                         matchDetails={matchDetails}
                         onChange={handleMatchDetailsChange}
+                        selectedCount={selectedPlayers.length}
+                        totalCount={players.length}
+                        onGenerate={handleGenerateTeams}
+                        disabled={!canGenerateTeams}
                     />
-
-                    {players.length > 0 && (
-                        <>
-                            <Players
-                                players={players}
-                                selectedPlayers={selectedPlayers}
-                                onToggle={togglePlayerSelection}
-                                onAddTemp={addTemporaryPlayer}
-                            />
-
-                            <GenerateSection
-                                selectedCount={selectedPlayers.length}
-                                totalCount={players.length}
-                                onGenerate={handleGenerateTeams}
-                                disabled={!canGenerateTeams}
-                            />
-                        </>
-                    )}
                 </>
             )}
 
-            {/* No loading animation overlay is shown during team generation */}
             {hasTeams && (
                 <div ref={teamsRef}>
                     <MatchInfo
@@ -340,7 +295,12 @@ function Draw() {
                 </div>
             )}
 
-            {!currentUser && !hasTeams && <EmptyState />}
+            {!currentUser && !hasTeams && (
+                <div className="empty-state">
+                    <div className="empty-state-icon">⚽</div>
+                    <p>No live match available. Check back soon!</p>
+                </div>
+            )}
         </div>
     );
 }
