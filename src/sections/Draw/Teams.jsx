@@ -69,6 +69,7 @@ const MatchInfoDisplay = ({ matchData }) => {
         );
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { phase, text } = useMatchCountdown(matchData);
 
     return (

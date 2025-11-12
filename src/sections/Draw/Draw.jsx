@@ -80,6 +80,7 @@ function Draw() {
 
     // Ref to the teams container; used to scroll to the end of the teams section
     const teamsRef = useRef(null);
+    const shouldScrollToTeams = useRef(false);
 
     // Fetch data from Firebase
     const fetchData = useCallback(async () => {
@@ -130,13 +131,15 @@ function Draw() {
     // This effect runs every time `teams` changes and ensures the bottom of the
     // teams cards is visible without scrolling past other sections of the page.
     useEffect(() => {
-        if (teams.length === 2 && teamsRef.current) {
+        if (shouldScrollToTeams.current && teams.length === 2 && teamsRef.current) {
             // Allow the DOM to update before scrolling
             setTimeout(() => {
                 teamsRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }, 100);
+            // reset the flag so we don't auto-scroll on initial load or subsequent fetches
+            shouldScrollToTeams.current = false;
         }
-    }, [teams, teamsRef]);
+    }, [teams]);
 
     // Add temporary player
     const addTemporaryPlayer = useCallback((tempPlayer) => {
@@ -228,6 +231,8 @@ function Draw() {
     // are not enough selected players, it does nothing.
     const handleGenerateTeams = useCallback(() => {
         if (selectedPlayers.length < 2) return;
+        // set flag so the next teams update scrolls into view
+        shouldScrollToTeams.current = true;
         generateTeams();
     }, [selectedPlayers, generateTeams]);
 
