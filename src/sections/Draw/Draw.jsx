@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { useSeason } from "../../components/SeasonContext.jsx";
 import { useAuth } from "../../components/AuthContext.jsx";
@@ -29,6 +29,23 @@ const formatDateToJJMMAA = (isoDate) => {
 // Calcule le total d’une équipe
 const calculateTeamTotal = (team) =>
     team.reduce((sum, player) => sum + (player.value || 0), 0);
+
+// Calcule les stats (matches, winrate, points, value) à partir des wins/draws/losses/bonus5goal
+const calculateStats = (wins = 0, draws = 0, losses = 0, bonus5goal = 0) => {
+    const matches = wins + draws + losses;
+    const winrate = matches > 0 ? ((wins / matches) * 100).toFixed(1) : 0;
+    const points = wins * 3 + draws + bonus5goal;
+    const value = matches > 0
+        ? (10 * (0.9 * ((3 * wins + draws) / (3 * matches)) + 0.1 * Math.min(bonus5goal / matches, 1))).toFixed(2)
+        : 0;
+
+    return {
+        matches,
+        winrate: parseFloat(winrate),
+        points,
+        value: parseFloat(value),
+    };
+};
 
 function Draw() {
     const { selectedSeason } = useSeason();
@@ -192,10 +209,12 @@ function Draw() {
 
     // Mise à jour des scores
     const handleScoreChange = useCallback((field, value) => {
+        const numericValue = Number(value) || 0;
+
         if (field === "scoreTeam1") {
-            setScoreTeam1(value);
+            setScoreTeam1(numericValue);
         } else if (field === "scoreTeam2") {
-            setScoreTeam2(value);
+            setScoreTeam2(numericValue);
         }
     }, []);
 
@@ -213,8 +232,99 @@ function Draw() {
                 scoreTeam2,
             };
 
+            // Sauvegarde du match final dans l'historique
             await setDoc(matchRef, finalMatchData);
 
+            // --- Mise à jour des stats des joueurs dans la collection players ---
+            const s1 = Number(scoreTeam1) || 0;
+            const s2 = Number(scoreTeam2) || 0;
+            const team1Players = liveMatch.team1 || [];
+            const team2Players = liveMatch.team2 || [];
+
+            let result;
+            if (s1 > s2) {
+                result = "team1";
+            } else if (s2 > s1) {
+                result = "team2";
+            } else {
+                result = "draw";
+            }
+
+            const margin = Math.abs(s1 - s2);
+            // Chaque tranche de 5 buts d'écart donne +1 de bonus5goal pour les gagnants
+            const bonusSteps = result === "draw" ? 0 : Math.floor(margin / 5);
+
+            const updatePlayerStats = async (
+                playerName,
+                { winDelta = 0, drawDelta = 0, lossDelta = 0, bonusDelta = 0 }
+            ) => {
+                if (!playerName) return;
+
+                // L'id du document est le nom du joueur
+                const playerRef = doc(db, `seasons/${selectedSeason}/players/${playerName}`);
+                const snap = await getDoc(playerRef);
+
+                if (!snap.exists()) {
+                    console.warn("Player document not found for", playerName);
+                    return;
+                }
+
+                const data = snap.data();
+
+                const wins = (data.wins || 0) + winDelta;
+                const draws = (data.draws || 0) + drawDelta;
+                const losses = (data.losses || 0) + lossDelta;
+                const bonus5goal = (data.bonus5goal || 0) + bonusDelta;
+
+                const stats = calculateStats(wins, draws, losses, bonus5goal);
+
+                await updateDoc(playerRef, {
+                    wins,
+                    draws,
+                    losses,
+                    bonus5goal,
+                    ...stats,
+                    // On garde la dernière date à laquelle le joueur a joué
+                    lastMatchDate: formattedDate,
+                });
+            };
+
+            const updates = [];
+
+            if (result === "draw") {
+                // Egalité : +1 draw pour tous les joueurs
+                team1Players.forEach((p) => {
+                    updates.push(updatePlayerStats(p.name, { drawDelta: 1 }));
+                });
+                team2Players.forEach((p) => {
+                    updates.push(updatePlayerStats(p.name, { drawDelta: 1 }));
+                });
+            } else if (result === "team1") {
+                // Team 1 gagne
+                team1Players.forEach((p) => {
+                    updates.push(
+                        updatePlayerStats(p.name, { winDelta: 1, bonusDelta: bonusSteps })
+                    );
+                });
+                team2Players.forEach((p) => {
+                    updates.push(updatePlayerStats(p.name, { lossDelta: 1 }));
+                });
+            } else if (result === "team2") {
+                // Team 2 gagne
+                team2Players.forEach((p) => {
+                    updates.push(
+                        updatePlayerStats(p.name, { winDelta: 1, bonusDelta: bonusSteps })
+                    );
+                });
+                team1Players.forEach((p) => {
+                    updates.push(updatePlayerStats(p.name, { lossDelta: 1 }));
+                });
+            }
+
+            // On attend que toutes les mises à jour de joueurs soient terminées
+            await Promise.all(updates);
+
+            // Ensuite on supprime le match Live
             const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
             await deleteDoc(liveMatchRef);
 
@@ -223,8 +333,6 @@ function Draw() {
             setSelectedPlayers([]);
             setScoreTeam1(0);
             setScoreTeam2(0);
-
-            console.log("Match saved successfully and Live cleared!");
         } catch (error) {
             console.error("Error saving match:", error);
         }
