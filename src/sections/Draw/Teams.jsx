@@ -1,11 +1,61 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import './Teams.css';
 
 // Compute the total value of a team based on its players.
 const calculateTeamTotal = (team) =>
-    team.reduce((sum, player) => sum + (player.value || 0), 0);
+    team.reduce((sum, player) => sum + (Number(player.value) || 0), 0);
 
+/* ------------------------ Time helpers for countdown ----------------------- */
+const parseMatchDateTime = (dateStr, timeStr) => {
+    // dateStr format expected: DD-MM-YYYY, timeStr: HH:mm
+    if (!dateStr || !timeStr) return null;
+    const [d, m, y] = (dateStr || '').split('-').map(Number);
+    const [hh, mm] = (timeStr || '').split(':').map(Number);
+    if (![d, m, y, hh, mm].every((n) => Number.isFinite(n))) return null;
+    // Local time
+    return new Date(y, m - 1, d, hh, mm, 0, 0);
+};
 
+const pad2 = (n) => String(n).padStart(2, '0');
+
+const formatDuration = (ms) => {
+    if (ms < 0) ms = 0;
+    const totalSec = Math.floor(ms / 1000);
+    const days = Math.floor(totalSec / 86400);
+    const hours = Math.floor((totalSec % 86400) / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+
+    if (days > 0) {
+        return `${days}d ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
+    }
+    return `${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
+};
+
+const useMatchCountdown = (matchData) => {
+    const start = parseMatchDateTime(matchData?.date, matchData?.startTime);
+    const end = parseMatchDateTime(matchData?.date, matchData?.endTime);
+    const [now, setNow] = useState(() => Date.now());
+
+    useEffect(() => {
+        const id = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(id);
+    }, [matchData?.date, matchData?.startTime, matchData?.endTime]);
+
+    if (!start || !end) {
+        return { phase: 'invalid', text: '—' };
+    }
+
+    if (now < start.getTime()) {
+        return { phase: 'before', text: `Starts in ${formatDuration(start.getTime() - now)}` };
+    }
+    if (now >= start.getTime() && now < end.getTime()) {
+        return { phase: 'during', text: `Ends in ${formatDuration(end.getTime() - now)}` };
+    }
+    return { phase: 'after', text: 'Match finished' };
+};
+
+/* --------------------------- Match Info component -------------------------- */
 // Displays static match information when teams have been generated.
 // This version uses a compact card layout with icons and a responsive grid.
 const MatchInfoDisplay = ({ matchData }) => {
@@ -18,6 +68,9 @@ const MatchInfoDisplay = ({ matchData }) => {
             </div>
         );
     }
+
+    const { phase, text } = useMatchCountdown(matchData);
+
     return (
         <div className="match-details-card">
             <h3 className="match-details-header">Match Info</h3>
@@ -55,6 +108,19 @@ const MatchInfoDisplay = ({ matchData }) => {
                     <div className="match-details-content">
                         <span className="match-details-label">Gap</span>
                         <span className="match-details-value">{matchData.gap}</span>
+                    </div>
+                </div>
+
+                {/* NEW: Live countdown */}
+                <div
+                    className={`match-details-item ${
+                        phase === 'after' ? 'countdown-finished' : 'countdown-live'
+                    }`}
+                >
+                    <span className="match-details-icon">⏳</span>
+                    <div className="match-details-content">
+                        <span className="match-details-label">Countdown</span>
+                        <span className="match-details-value">{text}</span>
                     </div>
                 </div>
             </div>

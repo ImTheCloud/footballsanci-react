@@ -1,3 +1,4 @@
+/* ================================ CSS =================================== */
 /*
  * Styles specific to the Teams component. This file covers the layout for
  * displaying the generated teams, match info box, and the score input/save
@@ -183,14 +184,14 @@
     gap: 0.55rem;
 }
 
-/* ✅ MATCH INFO ALIGNÉ AVEC LES ÉQUIPES */
+/* ✅ MATCH INFO ALIGNED WITH TEAMS */
 .match-details-card {
     background: linear-gradient(135deg, rgba(10, 10, 10, 0.75) 60%, rgba(16, 185, 129, 0.08) 100%);
     border: 2px solid rgba(16, 185, 129, 0.55);
     border-radius: 1.1rem;
     padding: 1rem 1.2rem;
     width: 100%;
-    max-width: 1100px; /* même largeur que les équipes */
+    max-width: 1100px; /* same width as teams */
     margin: 0 auto 1.5rem;
     box-sizing: border-box;
     backdrop-filter: blur(12px);
@@ -252,6 +253,16 @@
     font-weight: 600;
     color: rgba(255, 255, 255, 0.95);
 }
+
+/* Countdown subtle tweaks (keeps same look) */
+.countdown-live .match-details-value {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+}
+.countdown-finished .match-details-value {
+    color: rgba(255, 255, 255, 0.8);
+}
+
 .match-details-empty {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.95rem;
@@ -276,7 +287,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -0.5rem; /* réduit légèrement l’espace vertical */
+    margin-top: -0.5rem; /* slight vertical tightening */
 }
 
 .score-input {
@@ -355,4 +366,10 @@
     .team-card {
         padding: 0.5rem;
     }
+}
+
+/* Keyframes (already referenced) */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
