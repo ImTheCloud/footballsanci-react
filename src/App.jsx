@@ -4,9 +4,9 @@ import { SeasonProvider } from "./components/SeasonContext.jsx";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
-import Ranking from "./sections/Ranking";
+import Ranking from "./sections/Ranking/Ranking.jsx";
 import History from "./sections/History";
-import Draw from "./sections/Draw";
+import Draw from "./sections/Draw/Draw";
 
 function App() {
     return (

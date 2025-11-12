@@ -1,0 +1,295 @@
+/*
+ * Styles specific to the Teams component. This file covers the layout for
+ * displaying the generated teams, match info box, and the score input/save
+ * section. It also includes colour customisations for different teams.
+ */
+
+.teams-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.teams-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    animation: fadeIn 0.5s ease forwards;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+
+.team-card {
+    background: rgba(10, 10, 10, 0.6);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.team-card:hover {
+    border-color: rgba(16, 185, 129, 0.6);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+}
+
+/* Team Colours */
+.team-card.team-1 {
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.team-card.team-1:hover {
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+}
+
+.team-card.team-2 {
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.team-card.team-2:hover {
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+}
+
+/* Team Header */
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+}
+
+.team-card.team-1 .team-header {
+    border-bottom-color: rgba(59, 130, 246, 0.3);
+}
+
+.team-card.team-2 .team-header {
+    border-bottom-color: rgba(239, 68, 68, 0.3);
+}
+
+.team-title {
+    margin: 0;
+    font-size: 1.35rem; /* 10% smaller */
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.team-card.team-1 .team-title {
+    color: rgba(59, 130, 246, 1);
+    text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+}
+
+.team-card.team-2 .team-title {
+    color: rgba(239, 68, 68, 1);
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.team-total {
+    font-size: 1.0125rem; /* 10% smaller */
+    font-weight: 700;
+    color: rgba(16, 185, 129, 1);
+    background: rgba(6, 78, 59, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.team-card.team-1 .team-total {
+    color: rgba(59, 130, 246, 1);
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.team-card.team-2 .team-total {
+    color: rgba(239, 68, 68, 1);
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Team Players List */
+.team-players {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.team-player-item {
+    background: rgba(6, 78, 59, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.875rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.team-player-item:hover {
+    background: rgba(6, 78, 59, 0.25);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.team-card.team-1 .team-player-item {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.team-card.team-1 .team-player-item:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.team-card.team-2 .team-player-item {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.team-card.team-2 .team-player-item:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+.team-player-name {
+    font-size: 0.9rem; /* 10% smaller */
+    font-weight: 600;
+    color: #fff;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.team-player-value {
+    font-size: 0.9rem; /* 10% smaller */
+    font-weight: 700;
+    color: rgba(16, 185, 129, 1);
+}
+
+.team-card.team-1 .team-player-value {
+    color: rgba(59, 130, 246, 1);
+}
+
+.team-card.team-2 .team-player-value {
+    color: rgba(239, 68, 68, 1);
+}
+
+/* Save Match & Score Inputs */
+.save-match-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.score-input-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.score-input {
+    width: 45px; /* réduit de 25% */
+    height: 38px; /* réduit de 25% */
+    background: rgba(6, 78, 59, 0.25);
+    border: 1.5px solid rgba(16, 185, 129, 0.3);
+    border-radius: 0.4rem;
+    color: #fff;
+    font-size: 0.9rem; /* légèrement plus petit */
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+    padding: 0.25rem;
+}
+
+.score-separator {
+    font-size: 1.4rem;
+    color: rgb(255, 255, 255);
+    margin: 0 0.5rem;
+}
+
+
+.score-input:focus {
+    outline: none;
+    border-color: rgba(16, 185, 129, 0.7);
+    background: rgba(6, 78, 59, 0.35);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.score-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.score-input-team1 {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+.score-input-team1:focus {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.score-input-team2 {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(239, 68, 68, 0.6);
+}
+
+.score-input-team2:focus {
+    background: rgba(10, 10, 10, 0.6);
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .team-card {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .team-title {
+        font-size: 1.08rem; /* 10% smaller */
+    }
+    .team-total {
+        font-size: 0.765rem; /* 10% smaller */
+        padding: 0.35rem 0.6rem;
+    }
+    .teams-container {
+        gap: 0.4rem;
+    }
+    .team-card {
+        padding: 0.5rem;
+    }
+}

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
-import { useSeason } from "../components/SeasonContext.jsx";
-import { useAuth } from "../components/AuthContext.jsx";
+import { db } from "../../services/firebase.js";
+import { useSeason } from "../../components/SeasonContext.jsx";
+import { useAuth } from "../../components/AuthContext.jsx";
 import "./Ranking.css";
 
 // Constants
