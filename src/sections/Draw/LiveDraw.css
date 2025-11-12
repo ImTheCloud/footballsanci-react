@@ -1,8 +1,8 @@
 /*
- * Styles specific to the LiveDraw component. These rules
- * define the layout for the match form and its rows, as well as
- * the gap control used to adjust the allowable difference between
- * generated team totals.
+ * Styles for the LiveDraw component. This stylesheet customises the appearance
+ * of the match form and its rows, including icons for each field, a centred
+ * select value for the location drop-down, and a refined gap control with
+ * aligned buttons and centred value display.
  */
 
 .match-box {
@@ -47,6 +47,8 @@
     margin: 0 auto;
 }
 
+/* Each row of the form. Icons replace the previous coloured squares and are
+   inserted directly in the markup via the match-row-icon span. */
 .match-row {
     display: flex;
     align-items: center;
@@ -62,21 +64,25 @@
     position: relative;
 }
 
+/* Hide the previous decorative square before each row */
 .match-row::before {
-    content: '';
-    display: inline-block;
-    width: 0.83rem;
-    height: 0.83rem;
+    display: none;
+}
+
+/* Icon displayed at the start of each row */
+.match-row-icon {
+    font-size: 1.25rem;
     margin-right: 0.7rem;
-    border-radius: 0.25rem;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(6, 78, 59, 0.6));
-    opacity: 0.7;
+    color: rgba(16, 185, 129, 1);
+    flex-shrink: 0;
 }
 
 .match-row label {
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
     min-width: 100px;
+    /* Reserve space on the left for the icon by adding some left margin */
+    /* margin-left is removed because the icon is now rendered as its own element */
 }
 
 .match-row input,
@@ -93,6 +99,12 @@
     text-align: center;
 }
 
+/* Centre the selected value in the location select. Some browsers require
+   text-align-last to centre the selected option. */
+.match-row select {
+    text-align-last: center;
+}
+
 .match-row input:focus,
 .match-row select:focus {
     border-color: rgba(16, 185, 129, 0.7);
@@ -105,6 +117,7 @@
     cursor: pointer;
 }
 
+/* Styling for the text that displays when no content is available */
 .match-value {
     flex: 1;
     padding: 0.4rem 0.6rem;
@@ -121,12 +134,12 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* Gap control adjustments: align minus button to the left, plus button to the right,
+   and centre the value between them. */
 .gap-control {
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 0.75rem;
 }
 
 .gap-control button {
@@ -155,10 +168,26 @@
     transform: scale(0.95);
 }
 
+/* The value display expands to fill available space and centres its text */
 .gap-control span {
+    flex: 1;
     color: rgba(255, 255, 255, 0.95);
     font-weight: 600;
     font-size: 0.95rem;
     min-width: 35px;
     text-align: center;
+}
+
+.gap-control button:first-child {
+    margin-right: 0;
+}
+
+.gap-control button:last-child {
+    margin-left: 0;
+}
+
+/* Keyframes for fade-in animation reused from MatchInfo */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
