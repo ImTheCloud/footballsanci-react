@@ -18,7 +18,7 @@
     gap: 0.5rem;
     animation: fadeIn 0.5s ease forwards;
     box-sizing: border-box;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 .team-card {
@@ -41,16 +41,13 @@
 .team-card.team-1 {
     border-color: rgba(59, 130, 246, 0.5);
 }
-
 .team-card.team-1:hover {
     border-color: rgba(59, 130, 246, 0.8);
     box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
 }
-
 .team-card.team-2 {
     border-color: rgba(239, 68, 68, 0.5);
 }
-
 .team-card.team-2:hover {
     border-color: rgba(239, 68, 68, 0.8);
     box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
@@ -71,14 +68,13 @@
 .team-card.team-1 .team-header {
     border-bottom-color: rgba(59, 130, 246, 0.3);
 }
-
 .team-card.team-2 .team-header {
     border-bottom-color: rgba(239, 68, 68, 0.3);
 }
 
 .team-title {
     margin: 0;
-    font-size: 1.35rem; /* 10% smaller */
+    font-size: 1.5rem;
     font-weight: 700;
     color: #fff;
     text-transform: uppercase;
@@ -94,14 +90,13 @@
     color: rgba(59, 130, 246, 1);
     text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
 }
-
 .team-card.team-2 .team-title {
     color: rgba(239, 68, 68, 1);
     text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
 }
 
 .team-total {
-    font-size: 1.0125rem; /* 10% smaller */
+    font-size: 1.125rem;
     font-weight: 700;
     color: rgba(16, 185, 129, 1);
     background: rgba(6, 78, 59, 0.3);
@@ -117,7 +112,6 @@
     background: rgba(59, 130, 246, 0.15);
     border-color: rgba(59, 130, 246, 0.4);
 }
-
 .team-card.team-2 .team-total {
     color: rgba(239, 68, 68, 1);
     background: rgba(239, 68, 68, 0.15);
@@ -144,52 +138,125 @@
     align-items: center;
     transition: all 0.2s ease;
 }
-
 .team-player-item:hover {
     background: rgba(6, 78, 59, 0.25);
     border-color: rgba(16, 185, 129, 0.4);
 }
-
 .team-card.team-1 .team-player-item {
     background: rgba(59, 130, 246, 0.1);
     border-color: rgba(59, 130, 246, 0.2);
 }
-
 .team-card.team-1 .team-player-item:hover {
     background: rgba(59, 130, 246, 0.2);
     border-color: rgba(59, 130, 246, 0.4);
 }
-
 .team-card.team-2 .team-player-item {
     background: rgba(239, 68, 68, 0.1);
     border-color: rgba(239, 68, 68, 0.2);
 }
-
 .team-card.team-2 .team-player-item:hover {
     background: rgba(239, 68, 68, 0.2);
     border-color: rgba(239, 68, 68, 0.4);
 }
 
 .team-player-name {
-    font-size: 0.9rem; /* 10% smaller */
+    font-size: 1rem;
     font-weight: 600;
     color: #fff;
-    word-break: break-word;
-    overflow-wrap: break-word;
 }
-
 .team-player-value {
-    font-size: 0.9rem; /* 10% smaller */
+    font-size: 1rem;
     font-weight: 700;
     color: rgba(16, 185, 129, 1);
 }
-
 .team-card.team-1 .team-player-value {
     color: rgba(59, 130, 246, 1);
 }
-
 .team-card.team-2 .team-player-value {
     color: rgba(239, 68, 68, 1);
+}
+
+/* Match Info section */
+.teams-wrapper .match-box .match-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 0.55rem;
+}
+
+/* ✅ MATCH INFO ALIGNÉ AVEC LES ÉQUIPES */
+.match-details-card {
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.75) 60%, rgba(16, 185, 129, 0.08) 100%);
+    border: 2px solid rgba(16, 185, 129, 0.55);
+    border-radius: 1.1rem;
+    padding: 1rem 1.2rem;
+    width: 100%;
+    max-width: 1100px; /* même largeur que les équipes */
+    margin: 0 auto 1.5rem;
+    box-sizing: border-box;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+            0 0 0 2.5px rgba(16, 185, 129, 0.18),
+            0 0 18px 0 rgba(16, 185, 129, 0.22),
+            0 0 38px 0 rgba(16, 185, 129, 0.11);
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.match-details-header {
+    font-size: 1.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 0.8rem 0;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 1), rgba(6, 78, 59, 1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.match-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.6rem;
+}
+
+.match-details-item {
+    display: flex;
+    align-items: center;
+    background: rgba(6, 78, 59, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.13);
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    box-shadow: 0 1px 4px 0 rgba(16, 185, 129, 0.06);
+}
+.match-details-icon {
+    font-size: 1.4rem;
+    margin-right: 0.65rem;
+    color: rgba(16, 185, 129, 1);
+    flex-shrink: 0;
+}
+.match-details-content {
+    display: flex;
+    flex-direction: column;
+}
+.match-details-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.match-details-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+}
+.match-details-empty {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    padding: 1rem 0;
+    text-align: center;
 }
 
 /* Save Match & Score Inputs */
@@ -209,42 +276,33 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: -0.5rem; /* réduit légèrement l’espace vertical */
 }
 
 .score-input {
-    width: 45px; /* réduit de 25% */
-    height: 38px; /* réduit de 25% */
+    width: 60px;
+    height: 50px;
     background: rgba(6, 78, 59, 0.25);
-    border: 1.5px solid rgba(16, 185, 129, 0.3);
-    border-radius: 0.4rem;
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: 0.5rem;
     color: #fff;
-    font-size: 0.9rem; /* légèrement plus petit */
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     text-align: center;
     transition: all 0.3s ease;
-    padding: 0.25rem;
+    padding: 0.4rem;
 }
-
-.score-separator {
-    font-size: 1.4rem;
-    color: rgb(255, 255, 255);
-    margin: 0 0.5rem;
-}
-
-
 .score-input:focus {
     outline: none;
     border-color: rgba(16, 185, 129, 0.7);
     background: rgba(6, 78, 59, 0.35);
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
 }
-
 .score-input::-webkit-outer-spin-button,
 .score-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-
 .score-input[type=number] {
     -moz-appearance: textfield;
 }
@@ -253,25 +311,30 @@
     background: rgba(10, 10, 10, 0.6);
     border-color: rgba(59, 130, 246, 0.6);
 }
-
 .score-input-team1:focus {
     background: rgba(10, 10, 10, 0.6);
     border-color: rgba(59, 130, 246, 0.8);
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
 }
-
 .score-input-team2 {
     background: rgba(10, 10, 10, 0.6);
     border-color: rgba(239, 68, 68, 0.6);
 }
-
 .score-input-team2:focus {
     background: rgba(10, 10, 10, 0.6);
     border-color: rgba(239, 68, 68, 0.8);
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
 }
 
-/* Responsive adjustments */
+.score-separator {
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(255, 255, 255);
+    text-shadow: 0 0 10px rgba(5, 104, 72, 0.5);
+    margin: 0 0.75rem;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
     .team-card {
         padding: 1rem;
@@ -280,10 +343,10 @@
 
 @media (max-width: 480px) {
     .team-title {
-        font-size: 1.08rem; /* 10% smaller */
+        font-size: 1.2rem;
     }
     .team-total {
-        font-size: 0.765rem; /* 10% smaller */
+        font-size: 0.85rem;
         padding: 0.35rem 0.6rem;
     }
     .teams-container {

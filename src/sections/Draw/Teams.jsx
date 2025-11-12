@@ -5,45 +5,62 @@ import './Teams.css';
 const calculateTeamTotal = (team) =>
     team.reduce((sum, player) => sum + (player.value || 0), 0);
 
-// Row used within the match info display; shows a label and content.
-const MatchInfoRow = ({ label, children }) => (
-    <div className="match-row">
-        <label>{label}:</label>
-        {children}
-    </div>
-);
 
 // Displays static match information when teams have been generated.
-const MatchInfoDisplay = ({ matchData }) => (
-    <div className="match-box">
-        <h3 className="match-info-title">Match Info</h3>
-        <div className="match-section">
-            {matchData ? (
-                <>
-                    <MatchInfoRow label="Date">
-                        <span className="match-value">{matchData.date}</span>
-                    </MatchInfoRow>
-                    <MatchInfoRow label="Start">
-                        <span className="match-value">{matchData.startTime}</span>
-                    </MatchInfoRow>
-                    <MatchInfoRow label="End">
-                        <span className="match-value">{matchData.endTime}</span>
-                    </MatchInfoRow>
-                    <MatchInfoRow label="Location">
-                        <span className="match-value">{matchData.location}</span>
-                    </MatchInfoRow>
-                    <MatchInfoRow label="Gap">
-                        <span className="match-value">{matchData.gap}</span>
-                    </MatchInfoRow>
-                </>
-            ) : (
-                <div className="match-row">
-                    <p className="empty-message">No match info available.</p>
+// This version uses a compact card layout with icons and a responsive grid.
+const MatchInfoDisplay = ({ matchData }) => {
+    // If no match data is provided, show an empty state
+    if (!matchData) {
+        return (
+            <div className="match-details-card">
+                <h3 className="match-details-header">Match Info</h3>
+                <div className="match-details-empty">No match info available.</div>
+            </div>
+        );
+    }
+    return (
+        <div className="match-details-card">
+            <h3 className="match-details-header">Match Info</h3>
+            <div className="match-details-grid">
+                <div className="match-details-item">
+                    <span className="match-details-icon">📅</span>
+                    <div className="match-details-content">
+                        <span className="match-details-label">Date</span>
+                        <span className="match-details-value">{matchData.date}</span>
+                    </div>
                 </div>
-            )}
+                <div className="match-details-item">
+                    <span className="match-details-icon">🕒</span>
+                    <div className="match-details-content">
+                        <span className="match-details-label">Start</span>
+                        <span className="match-details-value">{matchData.startTime}</span>
+                    </div>
+                </div>
+                <div className="match-details-item">
+                    <span className="match-details-icon">🕒</span>
+                    <div className="match-details-content">
+                        <span className="match-details-label">End</span>
+                        <span className="match-details-value">{matchData.endTime}</span>
+                    </div>
+                </div>
+                <div className="match-details-item">
+                    <span className="match-details-icon">📍</span>
+                    <div className="match-details-content">
+                        <span className="match-details-label">Location</span>
+                        <span className="match-details-value">{matchData.location}</span>
+                    </div>
+                </div>
+                <div className="match-details-item">
+                    <span className="match-details-icon">↔️</span>
+                    <div className="match-details-content">
+                        <span className="match-details-label">Gap</span>
+                        <span className="match-details-value">{matchData.gap}</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // Card showing a single team and its players.
 const TeamCard = ({ team, index }) => {
