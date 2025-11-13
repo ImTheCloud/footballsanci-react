@@ -6,7 +6,7 @@ import { useAuth } from "../../components/AuthContext.jsx";
 import "./Draw.css";
 import NextMatch from "./NextMatch.jsx";
 import Players from "./Players.jsx";
-import MatchInfo from "./MatchInfo.jsx";
+import LiveDraw from "./LiveDraw.jsx";
 
 // Etat initial du match
 const INITIAL_MATCH_DETAILS = {
@@ -390,7 +390,7 @@ function Draw() {
 
             {hasTeams && (
                 <div ref={teamsRef}>
-                    <MatchInfo
+                    <LiveDraw
                         teams={teams}
                         matchData={liveMatch}
                         scoreTeam1={scoreTeam1}

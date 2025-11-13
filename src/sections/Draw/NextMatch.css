@@ -162,7 +162,7 @@
     margin-left: 0;
 }
 
-/* Keyframes for fade-in animation reused from MatchInfo */
+/* Keyframes for fade-in animation reused from LiveDraw */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }

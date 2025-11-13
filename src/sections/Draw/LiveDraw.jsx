@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import './MatchInfo.css';
+import './LiveDraw.css';
 
 // Compute the total value of a team based on its players.
 const calculateTeamTotal = (team) =>
@@ -75,7 +75,7 @@ const MatchInfoDisplay = ({ matchData, countdown }) => {
 
     return (
         <div className="match-details-card">
-            <h3 className="section-title section-title--compact">Match Info</h3>
+            <h3 className="section-title section-title--compact">Live Draw</h3>
             <div className="match-details-grid">
                 {/* Countdown — même design que les autres champs, au-dessus */}
                 <div className={`match-details-item match-details-item--full countdown-${phase}`}>
@@ -194,10 +194,10 @@ const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disab
 );
 
 /**
- * MatchInfo displays the match information, generated teams, and score input/save
+ * LiveDraw displays the match information, generated teams, and score input/save
  * controls.
  */
-const MatchInfo = ({
+const LiveDraw = ({
                        teams,
                        matchData,
                        scoreTeam1,
@@ -229,4 +229,4 @@ const MatchInfo = ({
     );
 };
 
-export default MatchInfo;
+export default LiveDraw;
