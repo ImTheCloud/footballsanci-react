@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import "./NextMatch.css";
 
-// Disponibles pour le sélecteur de lieu.
 const LOCATIONS = ["Fit Five", "Halle"];
 const GAP_STEP = 0.1;
 const MIN_GAP = 0;
 
-// Helpers date
 const pad = (n) => String(n).padStart(2, "0");
 const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const getTodayISO = () => toISO(new Date());
@@ -18,7 +16,6 @@ const getNextSaturdayISO = () => {
     return toISO(d);
 };
 
-// Composant de ligne avec icône
 const MatchInfoRow = ({ label, icon, children }) => (
     <div className="match-row">
         {icon && <span className="match-row-icon">{icon}</span>}
@@ -27,7 +24,6 @@ const MatchInfoRow = ({ label, icon, children }) => (
     </div>
 );
 
-// Contrôle de la marge d’écart
 const GapControl = ({ value, onChange }) => (
     <div className="gap-control">
         <button
@@ -65,15 +61,14 @@ const MatchBox = ({ title, children }) => (
     </div>
 );
 
-// Composant principal NextMatch
 const NextMatch = ({
-                      matchDetails,
-                      onChange,
-                      selectedCount = 0,
-                      totalCount = 0,
-                      onGenerate = () => {},
-                      disabled = false,
-                  }) => {
+                       matchDetails,
+                       onChange,
+                       selectedCount = 0,
+                       totalCount = 0,
+                       onGenerate = () => {},
+                       disabled = false,
+                   }) => {
     const nextSaturday = useMemo(getNextSaturdayISO, []);
     const today = useMemo(getTodayISO, []);
     const didInit = useRef(false);
@@ -133,9 +128,10 @@ const NextMatch = ({
 
             <div className="generate-section">
                 <div className="selected-counter">
-                <span className="selected-counter-number">
-                    {selectedCount}
-                </span> / {totalCount} joueurs sélectionnés
+                    <span className="selected-counter-number">
+                        {selectedCount}
+                    </span>{" "}
+                    / {totalCount} joueurs sélectionnés
                 </div>
                 <button
                     className="generate-button"

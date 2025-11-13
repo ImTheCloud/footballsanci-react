@@ -7,12 +7,10 @@ const calculateTeamTotal = (team) =>
 
 /* ------------------------ Time helpers for countdown ----------------------- */
 const parseMatchDateTime = (dateStr, timeStr) => {
-    // dateStr format expected: DD-MM-YYYY, timeStr: HH:mm
     if (!dateStr || !timeStr) return null;
     const [d, m, y] = (dateStr || '').split('-').map(Number);
     const [hh, mm] = (timeStr || '').split(':').map(Number);
     if (![d, m, y, hh, mm].every((n) => Number.isFinite(n))) return null;
-    // Local time
     return new Date(y, m - 1, d, hh, mm, 0, 0);
 };
 
@@ -77,7 +75,6 @@ const MatchInfoDisplay = ({ matchData, countdown }) => {
         <div className="match-details-card">
             <h3 className="section-title section-title--compact">Live Draw</h3>
             <div className="match-details-grid">
-                {/* Countdown — même design que les autres champs, au-dessus */}
                 <div className={`match-details-item match-details-item--full countdown-${phase}`}>
                     <span className="match-details-icon">⏳</span>
                     <div className="match-details-text">
@@ -139,7 +136,9 @@ const TeamCard = ({ team, index }) => {
                 {team.map((player) => (
                     <li key={player.id || player.name} className="team-player-item">
                         <span className="team-player-name">{player.name}</span>
-                        <span className="team-player-value">{player.value}</span>
+                        <span className="team-player-value">
+                            {Number(player.value || 0).toFixed(2)}
+                        </span>
                     </li>
                 ))}
             </ul>
@@ -179,7 +178,6 @@ const ScoreInput = ({ scoreTeam1, scoreTeam2, onChange }) => {
     );
 };
 
-// Section for saving a match and entering the final score.
 const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disabled }) => (
     <div className="save-match-section">
         <ScoreInput
@@ -193,19 +191,15 @@ const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disab
     </div>
 );
 
-/**
- * LiveDraw displays the match information, generated teams, and score input/save
- * controls.
- */
 const LiveDraw = ({
-                       teams,
-                       matchData,
-                       scoreTeam1,
-                       scoreTeam2,
-                       onScoreChange,
-                       onSaveMatch,
-                       currentUser,
-                   }) => {
+                      teams,
+                      matchData,
+                      scoreTeam1,
+                      scoreTeam2,
+                      onScoreChange,
+                      onSaveMatch,
+                      currentUser,
+                  }) => {
     const countdown = useMatchCountdown(matchData || {});
 
     return (

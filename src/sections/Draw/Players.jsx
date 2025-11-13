@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Players.css';
 
-// Renders a single player card. If selected, it applies a modifier class
-// and calls onToggle when clicked.
 const PlayerCard = ({ player, isSelected, onToggle }) => (
     <button
         className={`player-card ${isSelected ? 'selected' : ''}`}
@@ -10,18 +8,18 @@ const PlayerCard = ({ player, isSelected, onToggle }) => (
         aria-pressed={isSelected}
     >
         <h4 className="player-card-name">{player.name}</h4>
-        <span className="player-card-value">{player.value}</span>
+        <span className="player-card-value">
+            {Number(player.value || 0).toFixed(2)}
+        </span>
     </button>
 );
 
-// Card used for adding a temporary player. It toggles between a button and a small form.
 const TempPlayerCard = ({ onAdd }) => {
     const [tempName, setTempName] = useState('');
     const [tempValue, setTempValue] = useState('');
     const [isAdding, setIsAdding] = useState(false);
     const formRef = useRef(null);
 
-    // Scroll the form into view when it appears.
     useEffect(() => {
         if (isAdding && formRef.current) {
             setTimeout(() => {
@@ -30,15 +28,15 @@ const TempPlayerCard = ({ onAdd }) => {
         }
     }, [isAdding]);
 
-    // Attempt to add the temporary player when the button is clicked
     const handleAdd = () => {
         const normalizedValue = tempValue.replace(',', '.');
-        const value = parseFloat(normalizedValue);
-        if (tempName.trim() && !isNaN(value) && value >= 0) {
+        const parsed = parseFloat(normalizedValue);
+        if (tempName.trim() && !isNaN(parsed) && parsed >= 0) {
+            const rounded = Number(parsed.toFixed(2));
             onAdd({
                 id: `temp-${Date.now()}`,
                 name: tempName.trim(),
-                value: value,
+                value: rounded,
                 isTemporary: true,
             });
             setTempName('');
@@ -47,7 +45,6 @@ const TempPlayerCard = ({ onAdd }) => {
         }
     };
 
-    // Handle Enter key on inputs to jump to next field or submit
     const handleKeyPress = (e, field) => {
         if (e.key === 'Enter') {
             if (field === 'name' && tempName.trim()) {
@@ -121,11 +118,6 @@ const TempPlayerCard = ({ onAdd }) => {
     );
 };
 
-/**
- * Players renders a grid of PlayerCard components. It takes the full list of
- * players, the currently selected players, and callbacks for toggling
- * selection and adding temporary players.
- */
 const Players = ({ players, selectedPlayers, onToggle, onAddTemp }) => (
     <div className="players-grid">
         {players.map((player) => (

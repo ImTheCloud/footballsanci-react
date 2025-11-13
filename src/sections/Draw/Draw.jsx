@@ -14,7 +14,7 @@ const INITIAL_MATCH_DETAILS = {
     startTime: "21:00",
     endTime: "22:00",
     location: "Fit Five",
-    gap: 1.00,
+    gap: 1.0,
 };
 
 // Formatage JJ-MM-AAAA
@@ -30,24 +30,22 @@ const formatDateToJJMMAA = (isoDate) => {
 const calculateTeamTotal = (team) =>
     team.reduce((sum, player) => sum + (Number(player.value) || 0), 0);
 
-// Stats joueur
+// Stats joueur (value arrondie à 2 décimales)
 const calculateStats = (wins = 0, draws = 0, losses = 0, bonus5goal = 0) => {
     const matches = wins + draws + losses;
     const winrate = matches > 0 ? ((wins / matches) * 100).toFixed(1) : 0;
     const points = wins * 3 + draws + bonus5goal;
-    const value = matches > 0
-        ? (
-            10 *
-            (0.9 * ((3 * wins + draws) / (3 * matches)) +
-                0.1 * Math.min(bonus5goal / matches, 1))
-        ).toFixed(2)
-        : 0;
+    const rawValue =
+        matches > 0
+            ? 10 * (0.9 * ((3 * wins + draws) / (3 * matches)) + 0.1 * Math.min(bonus5goal / matches, 1))
+            : 0;
+    const value = Number(rawValue.toFixed(2)); // <= numeric, 2 décimales max
 
     return {
         matches,
         winrate: parseFloat(winrate),
         points,
-        value: parseFloat(value),
+        value,
     };
 };
 
@@ -139,9 +137,9 @@ function Draw() {
     // Balanced teams + FAILSAFE
     const generateBalancedTeams = useCallback(
         (playersList) => {
-            const safePlayers = playersList.map(p => ({
+            const safePlayers = playersList.map((p) => ({
                 ...p,
-                value: Number(p.value) || 0
+                value: Number(p.value) || 0,
             }));
 
             const MAX_DIFFERENCE = matchDetails.gap;
@@ -205,7 +203,7 @@ function Draw() {
             const matchData = {
                 team1: team1.map((p) => ({
                     name: p.name,
-                    value: Number(p.value || 0).toFixed(2),
+                    value: Number(p.value || 0).toFixed(2), // 2 digits en DB
                 })),
                 team2: team2.map((p) => ({
                     name: p.name,
