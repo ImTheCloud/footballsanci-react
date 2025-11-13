@@ -33,15 +33,21 @@ const GapControl = ({ value, onChange }) => (
         <button
             type="button"
             aria-label="Decrease gap"
-            onClick={() => onChange(Math.max(MIN_GAP, +(value - GAP_STEP).toFixed(1)))}
+            onClick={() => {
+                const num = Number(value) || 0;
+                onChange(Math.max(MIN_GAP, +((num - GAP_STEP).toFixed(2))));
+            }}
         >
             −
         </button>
-        <span>{Number(value).toFixed(1)}</span>
+        <span>{Number(value).toFixed(2)}</span>
         <button
             type="button"
             aria-label="Increase gap"
-            onClick={() => onChange(+(value + GAP_STEP).toFixed(1))}
+            onClick={() => {
+                const num = Number(value) || 0;
+                onChange(+((num + GAP_STEP).toFixed(2)));
+            }}
         >
             +
         </button>

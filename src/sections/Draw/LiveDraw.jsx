@@ -68,16 +68,10 @@ const MatchInfoDisplay = ({ matchData, countdown }) => {
     }
 
     const { phase, text } = countdown || { phase: 'invalid', text: '—' };
-    const formatTime = (t) => {
-        if (!t) return '—';
-        const [hh, mm] = t.split(':');
-        return mm === '00' ? `${hh}h` : `${hh}h${mm}`;
-    };
-
     const timeRange =
         matchData.startTime && matchData.endTime
-            ? `${formatTime(matchData.startTime)} - ${formatTime(matchData.endTime)}`
-            : formatTime(matchData.startTime);
+            ? `${matchData.startTime} - ${matchData.endTime}`
+            : matchData.startTime || '—';
 
     return (
         <div className="match-details-card">
