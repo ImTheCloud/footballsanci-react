@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import './LiveDraw.css';
+import './styles/LiveDraw.css';
 
 // Compute the total value of a team based on its players.
 const calculateTeamTotal = (team) =>

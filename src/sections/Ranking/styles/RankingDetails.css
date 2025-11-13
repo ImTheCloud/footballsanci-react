@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Stats Grid (Expanded details)
+   ========================================================================== */
+
+.ranking-item-details {
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-grid {
+    padding: 0.5rem 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.stat-item {
+    background: rgba(6, 78, 59, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.stat-item:hover {
+    background: rgba(6, 78, 59, 0.25);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Couleurs stat-item selon le rang (héritées via .ranking-item.* parent) */
+
+.ranking-item.rank-gold .stat-item {
+    border-color: rgba(251, 191, 36, 0.6);
+    background: rgba(251, 191, 36, 0.12);
+}
+
+.ranking-item.rank-silver .stat-item {
+    border-color: rgba(203, 213, 225, 0.6);
+    background: rgba(203, 213, 225, 0.12);
+}
+
+.ranking-item.rank-bronze .stat-item {
+    border-color: rgba(217, 119, 6, 0.6);
+    background: rgba(217, 119, 6, 0.12);
+}
+
+.stat-label {
+    font-size: var(--font-small);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.stat-value {
+    font-size: var(--font-small);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+/* ==========================================================================
+   Stat Controls (+ / -)
+   ========================================================================== */
+
+.stat-controls {
+    display: flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.stat-btn {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    border-radius: 0.25rem;
+    background: rgba(16, 185, 129, 0.2);
+    color: #fff;
+    font-size: var(--font-normal);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.stat-btn:active {
+    transform: scale(0.95);
+}
+
+.ranking-item.rank-gold .stat-btn {
+    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.2);
+}
+
+.ranking-item.rank-silver .stat-btn {
+    border-color: rgba(203, 213, 225, 0.4);
+    background: rgba(203, 213, 225, 0.2);
+}
+
+.ranking-item.rank-bronze .stat-btn {
+    border-color: rgba(217, 119, 6, 0.4);
+    background: rgba(217, 119, 6, 0.2);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (min-width: 640px) {
+    .stats-grid {
+        gap: 1rem;
+    }
+
+    .stat-item {
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: var(--font-large);
+    }
+}
+
+@media (min-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

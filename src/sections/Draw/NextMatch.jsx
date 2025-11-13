@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import "./NextMatch.css";
+import "./styles/NextMatch.css";
 
 const LOCATIONS = ["Fit Five", "Halle"];
 const GAP_STEP = 0.1;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Players.css';
+import './styles/Players.css';
 
 const PlayerCard = ({ player, isSelected, onToggle }) => (
     <button

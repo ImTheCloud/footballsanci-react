@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { collection, getDocs, doc, setDoc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
+import { calculateStats } from "../utils/calculateStats.js";
 import { useSeason } from "../../components/SeasonContext.jsx";
 import { useAuth } from "../../components/AuthContext.jsx";
-import "./Draw.css";
+import "./styles/Draw.css";
 import NextMatch from "./NextMatch.jsx";
 import Players from "./Players.jsx";
 import LiveDraw from "./LiveDraw.jsx";
@@ -29,25 +30,6 @@ const formatDateToJJMMAA = (isoDate) => {
 // Total équipe
 const calculateTeamTotal = (team) =>
     team.reduce((sum, player) => sum + (Number(player.value) || 0), 0);
-
-// Stats joueur (value arrondie à 2 décimales)
-const calculateStats = (wins = 0, draws = 0, losses = 0, bonus5goal = 0) => {
-    const matches = wins + draws + losses;
-    const winrate = matches > 0 ? ((wins / matches) * 100).toFixed(1) : 0;
-    const points = wins * 3 + draws + bonus5goal;
-    const rawValue =
-        matches > 0
-            ? 10 * (0.9 * ((3 * wins + draws) / (3 * matches)) + 0.1 * Math.min(bonus5goal / matches, 1))
-            : 0;
-    const value = Number(rawValue.toFixed(2)); // <= numeric, 2 décimales max
-
-    return {
-        matches,
-        winrate: parseFloat(winrate),
-        points,
-        value,
-    };
-};
 
 function Draw() {
     const { selectedSeason } = useSeason();
