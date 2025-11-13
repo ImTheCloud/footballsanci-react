@@ -367,7 +367,6 @@ function Draw() {
             {currentUser && (
                 <>
                     <h2 className="section-title">Live Draw</h2>
-                    {/* Affiche toujours les joueurs en premier */}
                     {players.length > 0 && (
                         <Players
                             players={players}

@@ -11,26 +11,6 @@
 }
 
 /* ==========================================================================
-   Page Title
-   ========================================================================== */
-
-.section-title {
-    text-align: center;
-    font-size: 3rem;
-    font-weight: 800;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0 0 3rem 0;
-    padding-top: 0.7rem;
-    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
-    background: linear-gradient(135deg, rgba(16, 185, 129, 1), rgba(6, 78, 59, 1));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* ==========================================================================
    Ranking List
    ========================================================================== */
 

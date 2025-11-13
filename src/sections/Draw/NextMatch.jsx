@@ -48,10 +48,13 @@ const GapControl = ({ value, onChange }) => (
     </div>
 );
 
-// Conteneur principal
 const MatchBox = ({ title, children }) => (
     <div className="match-box">
-        <h3 className="match-info-title">{title}</h3>
+        {title && (
+            <h3 className="section-title section-title--compact">
+                {title}
+            </h3>
+        )}
         <div className="match-section">{children}</div>
     </div>
 );
@@ -116,13 +119,17 @@ const NextMatch = ({
             </MatchInfoRow>
 
             <MatchInfoRow label="Gap" icon="↔️">
-                <GapControl value={matchDetails.gap} onChange={(v) => onChange("gap", v)} />
+                <GapControl
+                    value={matchDetails.gap}
+                    onChange={(v) => onChange("gap", v)}
+                />
             </MatchInfoRow>
 
-            {/* Section de génération sous le champ Gap */}
             <div className="generate-section">
                 <div className="selected-counter">
-                    <span className="selected-counter-number">{selectedCount}</span> / {totalCount} joueurs sélectionnés
+                <span className="selected-counter-number">
+                    {selectedCount}
+                </span> / {totalCount} joueurs sélectionnés
                 </div>
                 <button
                     className="generate-button"

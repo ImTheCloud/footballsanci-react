@@ -56,10 +56,8 @@ const useMatchCountdown = (matchData) => {
 };
 
 /* --------------------------- Match Info component -------------------------- */
-// Displays static match information when teams have been generated.
-// This version uses a compact card layout with icons and a responsive grid.
-const MatchInfoDisplay = ({ matchData }) => {
-    // If no match data is provided, show an empty state
+
+const MatchInfoDisplay = ({ matchData, countdown }) => {
     if (!matchData) {
         return (
             <div className="match-details-card">
@@ -69,59 +67,58 @@ const MatchInfoDisplay = ({ matchData }) => {
         );
     }
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { phase, text } = useMatchCountdown(matchData);
+    const { phase, text } = countdown || { phase: 'invalid', text: '—' };
+    const timeRange =
+        matchData.startTime && matchData.endTime
+            ? `${matchData.startTime} - ${matchData.endTime}`
+            : matchData.startTime || '—';
 
     return (
         <div className="match-details-card">
-            <h3 className="match-details-header">Match Info</h3>
+            <h3 className="section-title section-title--compact">Match Info</h3>
             <div className="match-details-grid">
-                <div className="match-details-item">
-                    <span className="match-details-icon">📅</span>
-                    <div className="match-details-content">
-                        <span className="match-details-label">Date</span>
-                        <span className="match-details-value">{matchData.date}</span>
-                    </div>
-                </div>
-                <div className="match-details-item">
-                    <span className="match-details-icon">🕒</span>
-                    <div className="match-details-content">
-                        <span className="match-details-label">Start</span>
-                        <span className="match-details-value">{matchData.startTime}</span>
-                    </div>
-                </div>
-                <div className="match-details-item">
-                    <span className="match-details-icon">🕒</span>
-                    <div className="match-details-content">
-                        <span className="match-details-label">End</span>
-                        <span className="match-details-value">{matchData.endTime}</span>
-                    </div>
-                </div>
-                <div className="match-details-item">
-                    <span className="match-details-icon">📍</span>
-                    <div className="match-details-content">
-                        <span className="match-details-label">Location</span>
-                        <span className="match-details-value">{matchData.location}</span>
-                    </div>
-                </div>
-                <div className="match-details-item">
-                    <span className="match-details-icon">↔️</span>
-                    <div className="match-details-content">
-                        <span className="match-details-label">Gap</span>
-                        <span className="match-details-value">{matchData.gap}</span>
+                {/* Countdown — même design que les autres champs, au-dessus */}
+                <div className={`match-details-item match-details-item--full countdown-${phase}`}>
+                    <span className="match-details-icon">⏳</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Countdown</span>
+                        <span className="match-details-value match-details-value--countdown">
+                            {text}
+                        </span>
                     </div>
                 </div>
 
-                {/* NEW: Live countdown */}
-                <div
-                    className={`match-details-item ${
-                        phase === 'after' ? 'countdown-finished' : 'countdown-live'
-                    }`}
-                >
-                    <span className="match-details-icon">⏳</span>
-                    <div className="match-details-content">
-                        <span className="match-details-label">Countdown</span>
-                        <span className="match-details-value">{text}</span>
+                <div className="match-details-item">
+                    <span className="match-details-icon">📅</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Date</span>
+                        <span className="match-details-value">{matchData.date || '—'}</span>
+                    </div>
+                </div>
+
+                <div className="match-details-item">
+                    <span className="match-details-icon">🕒</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Time</span>
+                        <span className="match-details-value">{timeRange}</span>
+                    </div>
+                </div>
+
+                <div className="match-details-item">
+                    <span className="match-details-icon">📍</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Location</span>
+                        <span className="match-details-value">
+                            {matchData.location || '—'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="match-details-item">
+                    <span className="match-details-icon">↔️</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Value Gap</span>
+                        <span className="match-details-value">{matchData.gap || '—'}</span>
                     </div>
                 </div>
             </div>
@@ -198,36 +195,38 @@ const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disab
 
 /**
  * MatchInfo displays the match information, generated teams, and score input/save
- * controls. It uses MatchInfoDisplay to show match metadata and TeamCard
- * components to render each team. When the user is logged in, the save
- * controls are displayed.
+ * controls.
  */
 const MatchInfo = ({
-                   teams,
-                   matchData,
-                   scoreTeam1,
-                   scoreTeam2,
-                   onScoreChange,
-                   onSaveMatch,
-                   currentUser,
-               }) => (
-    <div className="teams-wrapper">
-        <MatchInfoDisplay matchData={matchData} />
-        <div className="teams-container">
-            {teams.map((team, index) => (
-                <TeamCard key={index} team={team} index={index} />
-            ))}
+                       teams,
+                       matchData,
+                       scoreTeam1,
+                       scoreTeam2,
+                       onScoreChange,
+                       onSaveMatch,
+                       currentUser,
+                   }) => {
+    const countdown = useMatchCountdown(matchData || {});
+
+    return (
+        <div className="teams-wrapper">
+            <MatchInfoDisplay matchData={matchData} countdown={countdown} />
+            <div className="teams-container">
+                {teams.map((team, index) => (
+                    <TeamCard key={index} team={team} index={index} />
+                ))}
+            </div>
+            {currentUser && (
+                <SaveMatchSection
+                    scoreTeam1={scoreTeam1}
+                    scoreTeam2={scoreTeam2}
+                    onScoreChange={onScoreChange}
+                    onSave={onSaveMatch}
+                    disabled={false}
+                />
+            )}
         </div>
-        {currentUser && (
-            <SaveMatchSection
-                scoreTeam1={scoreTeam1}
-                scoreTeam2={scoreTeam2}
-                onScoreChange={onScoreChange}
-                onSave={onSaveMatch}
-                disabled={false}
-            />
-        )}
-    </div>
-);
+    );
+};
 
 export default MatchInfo;
