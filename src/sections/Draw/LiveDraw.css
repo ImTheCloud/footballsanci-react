@@ -364,22 +364,12 @@
 }
 
 @media (max-width: 768px) {
-    .team-card {
-        padding: 1rem;
-    }
-
     .section-title--compact {
         margin: 0 0 0.8rem;
         font-size: 2.3rem;
         line-height: 1.5;
     }
 
-}
-
-@media (max-width: 600px) {
-    .match-details-header {
-        font-size: 1.5rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -399,7 +389,7 @@
 
     .match-details-item {
         min-height: 44px;
-        padding: 0.45rem 0.6rem;
+        padding: 0.45rem 0.4rem;
     }
 }
 
