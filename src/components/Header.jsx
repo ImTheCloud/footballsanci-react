@@ -10,7 +10,7 @@ function Header() {
     const scrollTo = (id) => {
         const el = document.getElementById(id);
         if (!el) return;
-        const headerOffset = 80; // header height
+        const headerOffset = 80;
         const y = el.getBoundingClientRect().top + window.scrollY - headerOffset;
         window.scrollTo({ top: y, behavior: "smooth" });
         setActiveSection(id);
@@ -40,7 +40,7 @@ function Header() {
 
     return (
         <header style={styles.header}>
-            {/* Left: Season selector */}
+            {/* LEFT: Season selector */}
             <div style={styles.left}>
                 {seasonReady ? (
                     <select
@@ -55,14 +55,13 @@ function Header() {
                         ))}
                     </select>
                 ) : (
-                    // Placeholder visible pendant le chargement Firebase
                     <div style={styles.seasonPlaceholder}>
                         Season…
                     </div>
                 )}
             </div>
 
-            {/* Right: Nav buttons */}
+            {/* RIGHT: Nav Buttons */}
             <nav style={styles.right}>
                 {sections.map((sec) => (
                     <button
@@ -108,7 +107,8 @@ const styles = {
         gap: "0.6rem",
         paddingRight: "0.6rem",
     },
-    // Native select
+
+    /* SELECT (season) */
     select: {
         flex: "0 0 auto",
         width: "auto",
@@ -116,11 +116,11 @@ const styles = {
         background: "transparent",
         border: "none",
         outline: "none",
-        fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
+        fontSize: "var(--font-normal)",
         fontWeight: 500,
         lineHeight: 1.2,
         cursor: "pointer",
-        padding: "8px 22px 8px 6px", // right padding for the arrow
+        padding: "8px 22px 8px 6px",
         appearance: "none",
         WebkitAppearance: "none",
         MozAppearance: "none",
@@ -130,36 +130,38 @@ const styles = {
         backgroundPosition: "right 6px center",
         backgroundSize: "10px 6px",
     },
+
     option: {
         color: "#000",
         backgroundColor: "#fff",
+        fontSize: "var(--font-normal)",
     },
-    // Placeholder qui garde la même taille visuelle que le select
+
     seasonPlaceholder: {
         flex: "0 0 auto",
         padding: "8px 22px 8px 6px",
-        fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
+        fontSize: "var(--font-normal)",
         fontWeight: 500,
         lineHeight: 1.2,
         color: "#fff",
         whiteSpace: "nowrap",
     },
+
+    /* NAV BUTTONS */
     navBtn: {
         background: "transparent",
         border: "none",
         color: "#fff",
-        letterSpacing: "0.5px",
         cursor: "pointer",
-        transition: "color 0.2s ease, opacity 0.2s ease",
         opacity: 0.8,
-        minWidth: "22px",
-        fontSize: "clamp(1.05rem, 2.4vw, 1.15rem)",
+        letterSpacing: "0.5px",
+        fontSize: "var(--font-normal)",
         fontWeight: 500,
         padding: "4px 6px",
         whiteSpace: "nowrap",
-        textDecoration: "none",
-        lineHeight: 1.2,
+        transition: "opacity 0.2s ease, color 0.2s ease",
     },
+
     navBtnActive: {
         color: "#10B981",
         opacity: 1,

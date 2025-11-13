@@ -1,7 +1,8 @@
+/* Index fill */
 :root {
     --bg: #0a0a0a;
-    --g1: rgba(6, 78, 59, 0.40); /* #064e3b à 40% */
-    --g2: rgba(6, 95, 70, 0.40); /* #065f46 à 40% */
+    --g1: rgba(6, 78, 59, 0.40);
+    --g2: rgba(6, 95, 70, 0.40);
     --font-very-small: 0.7rem;
     --font-small: 0.9rem;
     --font-normal: 1rem;
@@ -16,25 +17,28 @@ html, body {
     scroll-behavior: smooth;
     height: 100%;
     background:
-            radial-gradient(circle at 20% 30%, var(--g1), rgba(6,78,59,0) 70%),
-            radial-gradient(circle at 80% 70%, var(--g2), rgba(6,95,70,0) 70%),
+            radial-gradient(circle at 20% 30%, var(--g1), transparent 70%),
+            radial-gradient(circle at 80% 70%, var(--g2), transparent 70%),
             var(--bg);
     background-attachment: fixed;
 }
 
-#root { min-height: 100%; }
+#root {
+    min-height: 100%;
+}
 
-main { margin-top: 60px; } /* espace sous le header fixe */
+main {
+    margin-top: 40px;
+}
 
 .section-title {
-    text-align: center;
     font-size: 3rem;
+    text-align: center;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 2px;
-    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
-    background: linear-gradient(135deg, rgba(16, 185, 129, 1), rgba(6, 78, 59, 1));
+    background: linear-gradient(135deg, rgba(16,185,129,1), rgba(6,78,59,1));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(16,185,129,0.5);
 }
