@@ -1,9 +1,4 @@
-/* ==========================================================================
-   Draw Page Base Styles
-   ========================================================================== */
 
-/* Base container for the draw page. It sets up the full height and basic
-   padding so that children components can position themselves relative to it. */
 .draw-container {
     position: relative;
     width: 100%;
@@ -34,7 +29,7 @@
 
 .empty-state p {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9375rem;
+    font-size: var(--font-normal);
     margin: 0;
     text-align: center;
 }
@@ -60,7 +55,7 @@
 
 .loading-state p {
     color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9375rem;
+    font-size: var(--font-normal);
     margin: 0;
 }
 

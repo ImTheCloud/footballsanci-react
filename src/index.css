@@ -2,6 +2,11 @@
     --bg: #0a0a0a;
     --g1: rgba(6, 78, 59, 0.40); /* #064e3b à 40% */
     --g2: rgba(6, 95, 70, 0.40); /* #065f46 à 40% */
+    --font-very-small: 0.7rem;
+    --font-small: 0.9rem;
+    --font-normal: 1rem;
+    --font-large: 1.25rem;
+    --font-title: 2rem;
 }
 
 html, body {

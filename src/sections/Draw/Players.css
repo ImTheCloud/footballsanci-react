@@ -1,17 +1,8 @@
-/*
- * Styles specific to the Players component. This includes the grid layout
- * used to display players and all variations of the player card, including
- * the temporary player add form.
- */
-
 .players-grid {
     width: 100%;
     max-width: 900px;
     margin: 0 auto 2rem;
     display: grid;
-    /* Increase the minimum width of each card slightly to ensure
-       there is enough space for both the name and value to sit
-       on the same line, especially on narrow screens. */
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 0.75rem;
 }
@@ -56,7 +47,7 @@
 }
 
 .player-card-name {
-    font-size: 1rem;
+    font-size: var(--font-normal);
     font-weight: 600;
     padding: 0.1rem;
     color: #fff;
@@ -65,51 +56,40 @@
     line-height: 1.3;
     word-break: break-word;
     margin: 0;
-    /* Prevent very long names from pushing the value onto a new line. The
-       overflow and ellipsis ensure that if the name is too long to fit,
-       it will be truncated gracefully rather than wrapping to a new line. */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .player-card-value {
-    font-size: 1rem;
+    font-size: var(--font-normal);
     font-weight: 700;
     color: rgba(16, 185, 129, 1);
     text-shadow: 0 0 4px rgba(16, 185, 129, 0.6);
     line-height: 1;
     flex-shrink: 0;
-    /* Keep the value on a single line and prevent it from wrapping under
-       the player's name. */
     white-space: nowrap;
 }
 
-/* On very small screens, reduce the font size of player names and values
-   so that both elements fit comfortably on a single line without wrapping.
-   We still keep the ellipsis behaviour as a last resort in case names are
-   extremely long. */
+/* On very small screens, reduce the font size of player names and values */
 @media (max-width: 480px) {
     .player-card-name {
-        font-size: 0.85rem;
+        font-size: var(--font-normal);
     }
     .player-card-value {
-        font-size: 0.85rem;
+        font-size: var(--font-normal);
     }
 }
 
 /* Temporary Player Card */
 .temp-player-card-trigger {
     background: rgba(10, 10, 10, 0.4);
-    /* Use a 1px dashed border to match the overall dimensions of regular player cards */
     border: 1px dashed rgba(16, 185, 129, 0.3);
     border-radius: 0.75rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    /* Use the same row layout as a normal player card so that the
-       "Temporary Player" label and the plus icon sit on the same line. */
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -122,8 +102,6 @@
 }
 
 .player-card.temp-player-card-trigger {
-    /* Match the padding of regular player cards so the temporary card
-       has the same height and width */
     padding: 1rem;
 }
 
@@ -135,16 +113,13 @@
 }
 
 .temp-player-card-trigger .player-card-name {
-    /* Use the same font size as regular player cards for consistency */
     color: rgba(255, 255, 255, 0.7);
-    font-size: 1rem;
+    font-size: var(--font-normal);
 }
 
 .temp-player-card-trigger .player-card-value {
-    /* Match the size of the plus icon to regular values so the card
-       height remains consistent with other player cards */
     color: rgba(16, 185, 129, 0.7);
-    font-size: 1rem;
+    font-size: var(--font-normal);
 }
 
 .temp-player-card-form {
@@ -153,8 +128,6 @@
     border-radius: 0.75rem;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    /* Lay out the inputs and button in a single row to maintain the
-       same height as the other player cards. */
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -165,14 +138,11 @@
 }
 
 .player-card.temp-player-card-form {
-    /* Provide a balanced padding and gap so that the form card matches
-       the size of other player cards while keeping inputs compact. */
     padding: 0.5rem;
     gap: 0.35rem;
 }
 
 .temp-player-input {
-    /* Allow the inputs to shrink and share space evenly when in a row */
     width: auto;
     flex: 1;
     min-width: 0;
@@ -181,7 +151,7 @@
     border: 1px solid rgba(16, 185, 129, 0.3);
     background: rgba(10, 10, 10, 0.5);
     color: #fff;
-    font-size: 0.9rem;
+    font-size: var(--font-normal);
     font-weight: 500;
     transition: all 0.2s;
     box-sizing: border-box;
@@ -199,13 +169,11 @@
 }
 
 .temp-player-name {
-    /* Align the text to the left when inputs are placed horizontally */
     text-align: left;
     font-weight: 600;
 }
 
 .temp-player-value {
-    /* Align the value input to the left when placed horizontally */
     text-align: left;
     font-weight: 700;
     color: rgba(16, 185, 129, 1);
@@ -226,18 +194,15 @@
     flex-direction: row;
     align-items: center;
     gap: 0.35rem;
-    /* Do not force the actions container to span the full width; let
-       it take only the space needed for the button. */
     width: auto;
 }
 
 .temp-player-btn {
-    /* Let the button size itself to its content and avoid stretching */
     flex: 0 0 auto;
     padding: 0.35rem 0.5rem;
     border-radius: 0.5rem;
     border: 1px solid transparent;
-    font-size: 0.875rem;
+    font-size: var(--font-small);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;

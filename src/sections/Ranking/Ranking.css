@@ -56,7 +56,10 @@
     outline-offset: 2px;
 }
 
-/* Rank Colors - Gold, Silver, Bronze */
+/* ==========================================================================
+   Rank Colors
+   ========================================================================== */
+
 .ranking-item.rank-gold {
     border-color: rgba(251, 191, 36, 0.6);
     background: rgba(251, 191, 36, 0.12);
@@ -91,7 +94,7 @@
 }
 
 /* ==========================================================================
-   Ranking Item Main Layout
+   Main Layout
    ========================================================================== */
 
 .ranking-item-main {
@@ -100,7 +103,6 @@
     grid-template-rows: auto auto;
     align-items: start;
     gap: 0.4rem 0.5rem;
-    width: 100%;
     box-sizing: border-box;
 }
 
@@ -145,13 +147,14 @@
 }
 
 .rank-number {
-    font-size: 1rem;
+    font-size: var(--font-normal);
     font-weight: 700;
     color: #fff;
     line-height: 1;
 }
 
 /* Rank Badge Colors */
+
 .ranking-item.rank-gold .rank-badge {
     background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(217, 119, 6, 0.5));
     border-color: rgba(251, 191, 36, 0.7);
@@ -180,7 +183,7 @@
 
 .player-name {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--font-large);
     font-weight: 600;
     color: #fff;
     line-height: 1.3;
@@ -196,19 +199,19 @@
 
 .player-fame-container {
     min-width: 0;
-    position: relative;
     overflow: hidden;
     max-width: 100%;
+    position: relative;
 }
 
 .player-fame {
     font-style: italic;
     color: #f0f0f0;
     margin: 0;
-    font-size: 0.85rem;
+    font-size: var(--font-small);
     line-height: 1.3;
-    padding: 0;
     white-space: nowrap;
+    padding: 0;
     display: inline-block;
 }
 
@@ -233,18 +236,19 @@
     animation-play-state: paused;
 }
 
+/* Fame input */
+
 .fame-input {
     background: transparent;
     border: none;
     padding: 0;
     color: #f0f0f0;
     font-style: italic;
-    font-size: 16px;
-    margin: 0;
-    width: 100%;
+    font-size: var(--font-small);
     line-height: 1.3;
     font-family: inherit;
     white-space: nowrap;
+    width: 100%;
 }
 
 .fame-input:focus {
@@ -256,7 +260,7 @@
 }
 
 /* ==========================================================================
-   Player Points
+   Points & Value
    ========================================================================== */
 
 .player-points {
@@ -278,7 +282,7 @@
 }
 
 .points-value {
-    font-size: 1.1rem;
+    font-size: var(--font-large);
     font-weight: 700;
     color: rgba(16, 185, 129, 1);
     line-height: 1.1;
@@ -301,15 +305,15 @@
 }
 
 .points-label {
-    font-size: 0.65rem;
+    font-size: var(--font-very-small);
     font-weight: 600;
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 /* ==========================================================================
-   Stats Grid (Expanded Details)
+   Stats Grid (Expanded)
    ========================================================================== */
 
 .ranking-item-details {
@@ -366,7 +370,7 @@
 }
 
 .stat-label {
-    font-size: 0.75rem;
+    font-size: var(--font-small);
     font-weight: 500;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
@@ -381,14 +385,14 @@
 }
 
 .stat-value {
-    font-size: 0.875rem;
+    font-size: var(--font-normal);
     font-weight: 700;
     color: #fff;
     line-height: 1.2;
 }
 
 /* ==========================================================================
-   Stat Controls
+   Stat Controls (+ / -)
    ========================================================================== */
 
 .stat-controls {
@@ -407,7 +411,7 @@
     border-radius: 0.25rem;
     background: rgba(16, 185, 129, 0.2);
     color: #fff;
-    font-size: 0.875rem;
+    font-size: var(--font-normal);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -434,7 +438,7 @@
 }
 
 /* ==========================================================================
-   State Displays
+   Loading / Empty States
    ========================================================================== */
 
 .loading-state,
@@ -457,15 +461,13 @@
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
 }
 
 .loading-state p,
 .empty-state p {
     color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9375rem;
+    font-size: var(--font-normal);
     margin: 0;
     text-align: center;
 }
@@ -480,14 +482,8 @@
     }
 
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 }
 
@@ -501,7 +497,7 @@
     }
 
     .section-title {
-        font-size: 2rem;
+        font-size: var(--font-title);
         margin-bottom: 2rem;
         letter-spacing: 1px;
     }
@@ -521,7 +517,7 @@
     }
 
     .rank-number {
-        font-size: 1.125rem;
+        font-size: var(--font-large);
     }
 }
 
@@ -535,11 +531,11 @@
     }
 
     .player-name {
-        font-size: 1.125rem;
+        font-size: var(--font-large);
     }
 
     .points-value {
-        font-size: 1.5rem;
+        font-size: var(--font-title);
     }
 
     .stats-grid {
@@ -551,7 +547,7 @@
     }
 
     .stat-value {
-        font-size: 1.125rem;
+        font-size: var(--font-large);
     }
 }
 
@@ -579,7 +575,7 @@
     }
 
     .player-name {
-        font-size: 1.25rem;
+        font-size: var(--font-large);
     }
 
     .rank-badge {

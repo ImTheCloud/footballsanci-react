@@ -1,3 +1,4 @@
+
 .match-box {
     background: linear-gradient(135deg, rgba(10, 10, 10, 0.75) 60%, rgba(16, 185, 129, 0.08) 100%);
     border: 2px solid rgba(16, 185, 129, 0.55);
@@ -34,7 +35,7 @@
     border-radius: 0.5rem;
     padding: 0.5rem 1.1rem;
     color: rgba(255, 255, 255, 0.85);
-    font-size: 0.9rem;
+    font-size: var(--font-normal);
     font-weight: 500;
     box-shadow: 0 1px 4px 0 rgba(16, 185, 129, 0.06);
     position: relative;
@@ -47,7 +48,7 @@
 
 /* Icon displayed at the start of each row */
 .match-row-icon {
-    font-size: 1.25rem;
+    font-size: var(--font-large);
     margin-right: 0.7rem;
     color: rgba(16, 185, 129, 1);
     flex-shrink: 0;
@@ -57,10 +58,9 @@
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
     min-width: 100px;
-    /* Reserve space on the left for the icon by adding some left margin */
-    /* margin-left is removed because the icon is now rendered as its own element */
 }
 
+/* Inputs & selects */
 .match-row input,
 .match-row select {
     flex: 1;
@@ -69,7 +69,7 @@
     border: 1px solid rgba(16, 185, 129, 0.3);
     background: rgba(6, 78, 59, 0.2);
     color: #fff;
-    font-size: 0.95rem;
+    font-size: var(--font-normal);
     transition: border-color 0.2s, background 0.2s;
     height: 38px;
     text-align: center;
@@ -98,7 +98,7 @@
     flex: 1;
     padding: 0.4rem 0.6rem;
     color: rgba(255, 255, 255, 0.95);
-    font-size: 0.95rem;
+    font-size: var(--font-normal);
     font-weight: 500;
     text-align: right;
 }
@@ -125,7 +125,7 @@
     border: 1px solid rgba(16, 185, 129, 0.4);
     background: rgba(6, 78, 59, 0.3);
     color: rgba(16, 185, 129, 1);
-    font-size: 1.25rem;
+    font-size: var(--font-large);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
@@ -149,7 +149,7 @@
     flex: 1;
     color: rgba(255, 255, 255, 0.95);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: var(--font-normal);
     min-width: 35px;
     text-align: center;
 }
@@ -182,7 +182,7 @@
 }
 
 .selected-counter {
-    font-size: 0.9375rem;
+    font-size: var(--font-small);
     color: rgba(255, 255, 255, 0.7);
     font-weight: 500;
 }
@@ -198,7 +198,7 @@
     border: 2px solid rgba(16, 185, 129, 0.5);
     border-radius: 0.75rem;
     color: #fff;
-    font-size: 1.0625rem;
+    font-size: var(--font-large);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -228,4 +228,3 @@
     outline: 2px solid rgba(16, 185, 129, 0.6);
     outline-offset: 2px;
 }
-
