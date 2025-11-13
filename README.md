@@ -1,16 +1,32 @@
-# React + Vite
+# ⚽ FootballSanci
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**FootballSanci** is a lightweight football management web app built with **React**, **Firebase**, and **Vite**.  
+It allows players to track match results, generate balanced team draws, and browse full season history — all inside a clean and responsive interface.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📚 Pages / Sections
 
-## React Compiler
+- **Ranking** – dynamic player ranking with live calculations (wins, draws, losses, winrate, bonus, value).
+- **Draw** – automatic team generator producing balanced teams.
+- **History** – complete match history stored per season.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React 18 + Vite** – fast, modern frontend tooling
+- **Firebase Firestore** – real-time database for players, stats, matches, and seasons
+- **Firebase Auth** – admin login to edit stats and manage data
+- **CSS (custom variables)** – global theming system
+- **Lucide Icons** – clean icon set
+
+---
+
+## 🚀 Installation
+
+```bash
+git clone https://github.com/ImTheCloud/footballsanci-react
+cd footballsanci-react
+npm install
+npm run dev
