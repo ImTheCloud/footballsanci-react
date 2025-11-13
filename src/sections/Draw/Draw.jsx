@@ -14,7 +14,7 @@ const INITIAL_MATCH_DETAILS = {
     startTime: "21:00",
     endTime: "22:00",
     location: "Fit Five",
-    gap: 1,
+    gap: 1.00,
 };
 
 // Formatage de date JJ-MM-AAAA
@@ -182,13 +182,19 @@ function Draw() {
             const liveMatchRef = doc(db, `seasons/${selectedSeason}/matches/Live`);
 
             const matchData = {
-                team1: team1.map((p) => ({ name: p.name, value: p.value || 0 })),
-                team2: team2.map((p) => ({ name: p.name, value: p.value || 0 })),
+                team1: team1.map((p) => ({
+                    name: p.name,
+                    value: Number(p.value || 0).toFixed(2),
+                })),
+                team2: team2.map((p) => ({
+                    name: p.name,
+                    value: Number(p.value || 0).toFixed(2),
+                })),
                 date: formattedDate,
                 startTime: matchDetails.startTime,
                 endTime: matchDetails.endTime,
                 location: matchDetails.location,
-                gap: matchDetails.gap ?? 1.5,
+                gap: Number(matchDetails.gap).toFixed(2),
                 scoreTeam1: 0,
                 scoreTeam2: 0,
             };
@@ -200,7 +206,6 @@ function Draw() {
         }
     }, [selectedPlayers, matchDetails, generateBalancedTeams, selectedSeason]);
 
-    // Gestion du clic sur le bouton « Generate Teams »
     const handleGenerateTeams = useCallback(() => {
         if (selectedPlayers.length < 2) return;
         shouldScrollToTeams.current = true;
@@ -340,7 +345,15 @@ function Draw() {
 
     // Mise à jour des détails de match
     const handleMatchDetailsChange = useCallback((field, value) => {
-        setMatchDetails((prev) => ({ ...prev, [field]: value }));
+        setMatchDetails((prev) => {
+            let newValue = value;
+            if (field === "gap") {
+                const safe = (value ?? "").toString();
+                const numeric = parseFloat(safe.replace(",", ".")) || 0;
+                newValue = numeric.toFixed(2);
+            }
+            return { ...prev, [field]: newValue };
+        });
 
         if (field === "date") {
             setSelectedPlayers([]);

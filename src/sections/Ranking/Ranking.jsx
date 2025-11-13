@@ -31,7 +31,7 @@ const calculateStats = (wins = 0, draws = 0, losses = 0, bonus5goal = 0) => {
         ? (10 * (0.9 * ((3 * wins + draws) / (3 * matches)) + 0.1 * Math.min(bonus5goal / matches, 1))).toFixed(2)
         : 0;
 
-    return { matches, winrate: parseFloat(winrate), points, value: parseFloat(value) };
+    return { matches, winrate: parseFloat(winrate), points, value: Number(value).toFixed(2) };
 };
 
 const getRankColor = (rank) => RANK_COLORS[rank] || RANK_COLORS.default;
@@ -127,7 +127,7 @@ const PlayerPoints = ({ points, value, rank }) => {
             </div>
             {value !== undefined && (
                 <div className="value-group">
-                    <span className={`points-value ${colorClass}`}>{value}</span>
+                    <span className={`points-value ${colorClass}`}>{Number(value).toFixed(2)}</span>
                     <span className="points-label">Value</span>
                 </div>
             )}
@@ -240,6 +240,10 @@ function Ranking() {
                 const list = snapshot.docs
                     .map((doc) => ({ id: doc.id, ...doc.data() }))
                     .sort((a, b) => {
+                        // 🆕 Manual rank priority
+                        if ((a.rank || 0) !== (b.rank || 0)) {
+                            return (a.rank || 0) - (b.rank || 0);
+                        }
                         // ✅ Always put players with 0 matches last
                         if ((a.matches || 0) === 0 && (b.matches || 0) > 0) return 1;
                         if ((b.matches || 0) === 0 && (a.matches || 0) > 0) return -1;
@@ -288,6 +292,10 @@ function Ranking() {
                     : p
                 )
                 .sort((a, b) => {
+                    // 🆕 Manual rank priority
+                    if ((a.rank || 0) !== (b.rank || 0)) {
+                        return (a.rank || 0) - (b.rank || 0);
+                    }
                     // ✅ Always put players with 0 matches last
                     if ((a.matches || 0) === 0 && (b.matches || 0) > 0) return 1;
                     if ((b.matches || 0) === 0 && (a.matches || 0) > 0) return -1;
@@ -346,7 +354,8 @@ function Ranking() {
             (players[i - 1].matches || 0) > 0 &&
             player.points === players[i - 1].points &&
             player.matches === players[i - 1].matches &&
-            player.value === players[i - 1].value
+            player.value === players[i - 1].value &&
+            (player.rank || 0) === (players[i - 1].rank || 0)
         ) {
             // Même stats → même rang
             ranks.push(currentRank);
