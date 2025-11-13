@@ -131,7 +131,7 @@ const NextMatch = ({
                     <span className="selected-counter-number">
                         {selectedCount}
                     </span>{" "}
-                    / {totalCount} joueurs sélectionnés
+                    / {totalCount} selected players
                 </div>
                 <button
                     className="generate-button"
