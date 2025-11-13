@@ -5,7 +5,7 @@ import './styles/LiveDraw.css';
 const calculateTeamTotal = (team) =>
     team.reduce((sum, player) => sum + (Number(player.value) || 0), 0);
 
-/* ------------------------ Time helpers for countdown ----------------------- */
+/* ------------------------ Time helpers for Timer ----------------------- */
 const parseMatchDateTime = (dateStr, timeStr) => {
     if (!dateStr || !timeStr) return null;
     const [d, m, y] = (dateStr || '').split('-').map(Number);
@@ -23,14 +23,11 @@ const formatDuration = (ms) => {
     const hours = Math.floor((totalSec % 86400) / 3600);
     const minutes = Math.floor((totalSec % 3600) / 60);
     const seconds = totalSec % 60;
-
-    if (days > 0) {
-        return `${days}d ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
-    }
+    if (days > 0) return `${days}d ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
     return `${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
 };
 
-const useMatchCountdown = (matchData) => {
+const useMatchTimer = (matchData) => {
     const start = parseMatchDateTime(matchData?.date, matchData?.startTime);
     const end = parseMatchDateTime(matchData?.date, matchData?.endTime);
     const [now, setNow] = useState(() => Date.now());
@@ -40,59 +37,87 @@ const useMatchCountdown = (matchData) => {
         return () => clearInterval(id);
     }, [matchData?.date, matchData?.startTime, matchData?.endTime]);
 
-    if (!start || !end) {
-        return { phase: 'invalid', text: '—' };
-    }
-
-    if (now < start.getTime()) {
-        return { phase: 'before', text: `Starts in ${formatDuration(start.getTime() - now)}` };
-    }
-    if (now >= start.getTime() && now < end.getTime()) {
-        return { phase: 'during', text: `Ends in ${formatDuration(end.getTime() - now)}` };
-    }
-    return { phase: 'after', text: 'Match finished' };
+    if (!start || !end) return { phase: 'invalid', text: '—' };
+    if (now < start.getTime()) return { phase: 'before', text: `${formatDuration(start.getTime() - now)}` };
+    if (now >= start.getTime() && now < end.getTime()) return { phase: 'during', text: `${formatDuration(end.getTime() - now)}` };
+    return { phase: 'after', text: 'finished' };
 };
 
 /* --------------------------- Match Info component -------------------------- */
 
-const MatchInfoDisplay = ({ matchData, countdown }) => {
+const MatchInfoDisplay = ({ matchData, Timer }) => {
     if (!matchData) {
         return (
             <div className="match-details-card">
-                <h3 className="match-details-header">Match Info</h3>
                 <div className="match-details-empty">No match info available.</div>
             </div>
         );
     }
 
-    const { phase, text } = countdown || { phase: 'invalid', text: '—' };
+    const { phase, text } = Timer;
     const timeRange =
         matchData.startTime && matchData.endTime
             ? `${matchData.startTime} - ${matchData.endTime}`
             : matchData.startTime || '—';
 
+    const diff =
+        matchData.valueDifference !== undefined
+            ? Number(matchData.valueDifference).toFixed(2)
+            : '—';
+
     return (
         <div className="match-details-card">
             <h3 className="section-title section-title--compact">Live Draw</h3>
+
             <div className="match-details-grid">
-                <div className={`match-details-item match-details-item--full countdown-${phase}`}>
+                {/* Timer */}
+                <div className={`match-details-item Timer-${phase}`}>
                     <span className="match-details-icon">⏳</span>
                     <div className="match-details-text">
-                        <span className="match-details-label">Countdown</span>
-                        <span className="match-details-value match-details-value--countdown">
+                        <span className="match-details-label">Timer</span>
+                        <span className="match-details-value match-details-value--Timer">
                             {text}
                         </span>
                     </div>
                 </div>
 
+                {/* Location */}
+                <div className="match-details-item">
+                    <span className="match-details-icon">📍</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Location</span>
+                        <span className="match-details-value">{matchData.location}</span>
+                    </div>
+                </div>
+
+                {/* Gap limit */}
+                <div className="match-details-item">
+                    <span className="match-details-icon">📏</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Gap limit</span>
+                        <span className="match-details-value">{matchData.gapLimit}</span>
+                    </div>
+                </div>
+
+                {/* Value diff */}
+                <div className="match-details-item">
+                    <span className="match-details-icon">↔️</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Value diff</span>
+                        <span className="match-details-value">{diff}</span>
+                    </div>
+                </div>
+
+                {/* Date */}
                 <div className="match-details-item">
                     <span className="match-details-icon">📅</span>
                     <div className="match-details-text">
                         <span className="match-details-label">Date</span>
-                        <span className="match-details-value">{matchData.date || '—'}</span>
+                        <span className="match-details-value">{matchData.date}</span>
                     </div>
                 </div>
 
+                {/* Time */}
                 <div className="match-details-item">
                     <span className="match-details-icon">🕒</span>
                     <div className="match-details-text">
@@ -101,29 +126,13 @@ const MatchInfoDisplay = ({ matchData, countdown }) => {
                     </div>
                 </div>
 
-                <div className="match-details-item">
-                    <span className="match-details-icon">📍</span>
-                    <div className="match-details-text">
-                        <span className="match-details-label">Location</span>
-                        <span className="match-details-value">
-                            {matchData.location || '—'}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="match-details-item">
-                    <span className="match-details-icon">↔️</span>
-                    <div className="match-details-text">
-                        <span className="match-details-label">Value Gap</span>
-                        <span className="match-details-value">{matchData.gap || '—'}</span>
-                    </div>
-                </div>
             </div>
         </div>
     );
 };
 
-// Card showing a single team and its players.
+// ---------------------------- Reste identique ----------------------------
+
 const TeamCard = ({ team, index }) => {
     const teamTotal = useMemo(() => calculateTeamTotal(team), [team]);
     return (
@@ -134,10 +143,10 @@ const TeamCard = ({ team, index }) => {
             </div>
             <ul className="team-players">
                 {team.map((player) => (
-                    <li key={player.id || player.name} className="team-player-item">
+                    <li key={player.name} className="team-player-item">
                         <span className="team-player-name">{player.name}</span>
                         <span className="team-player-value">
-                            {Number(player.value || 0).toFixed(2)}
+                            {Number(player.value).toFixed(2)}
                         </span>
                     </li>
                 ))}
@@ -146,37 +155,25 @@ const TeamCard = ({ team, index }) => {
     );
 };
 
-// Inputs for entering final scores for each team.
-const ScoreInput = ({ scoreTeam1, scoreTeam2, onChange }) => {
-    const handleFocus = (e) => {
-        e.target.select();
-    };
-    const handleChange = (team, value) => {
-        const parsed = parseInt(value, 10);
-        onChange(team, isNaN(parsed) ? 0 : parsed);
-    };
-    return (
-        <div className="score-input-wrapper">
-            <input
-                type="number"
-                min="0"
-                value={scoreTeam1}
-                onFocus={handleFocus}
-                onChange={(e) => handleChange('scoreTeam1', e.target.value)}
-                className="score-input score-input-team1"
-            />
-            <span className="score-separator">-</span>
-            <input
-                type="number"
-                min="0"
-                value={scoreTeam2}
-                onFocus={handleFocus}
-                onChange={(e) => handleChange('scoreTeam2', e.target.value)}
-                className="score-input score-input-team2"
-            />
-        </div>
-    );
-};
+const ScoreInput = ({ scoreTeam1, scoreTeam2, onChange }) => (
+    <div className="score-input-wrapper">
+        <input
+            type="number"
+            min="0"
+            value={scoreTeam1}
+            onChange={(e) => onChange('scoreTeam1', e.target.value)}
+            className="score-input score-input-team1"
+        />
+        <span className="score-separator">-</span>
+        <input
+            type="number"
+            min="0"
+            value={scoreTeam2}
+            onChange={(e) => onChange('scoreTeam2', e.target.value)}
+            className="score-input score-input-team2"
+        />
+    </div>
+);
 
 const SaveMatchSection = ({ scoreTeam1, scoreTeam2, onScoreChange, onSave, disabled }) => (
     <div className="save-match-section">
@@ -200,11 +197,11 @@ const LiveDraw = ({
                       onSaveMatch,
                       currentUser,
                   }) => {
-    const countdown = useMatchCountdown(matchData || {});
+    const Timer = useMatchTimer(matchData || {});
 
     return (
         <div className="teams-wrapper">
-            <MatchInfoDisplay matchData={matchData} countdown={countdown} />
+            <MatchInfoDisplay matchData={matchData} Timer={Timer} />
             <div className="teams-container">
                 {teams.map((team, index) => (
                     <TeamCard key={index} team={team} index={index} />

@@ -15,7 +15,7 @@ const INITIAL_MATCH_DETAILS = {
     startTime: "21:00",
     endTime: "22:00",
     location: "Fit Five",
-    gap: 1.0,
+    gapLimit: 1.0,
 };
 
 // Formatage JJ-MM-AAAA
@@ -57,9 +57,9 @@ function Draw() {
                 const playersSnapshot = await getDocs(
                     collection(db, `seasons/${selectedSeason}/players`)
                 );
-                const playersList = playersSnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
+                const playersList = playersSnapshot.docs.map((docSnap) => ({
+                    id: docSnap.id,
+                    ...docSnap.data(),
                 }));
                 setPlayers(playersList);
             }
@@ -69,6 +69,12 @@ function Draw() {
 
             if (liveSnapshot.exists()) {
                 const data = liveSnapshot.data();
+
+                // Fallback ancien champ "gap"
+                if (data.gapLimit === undefined && data.gap !== undefined) {
+                    data.gapLimit = data.gap;
+                }
+
                 setTeams([data.team1, data.team2]);
                 setLiveMatch(data);
                 setScoreTeam1(data.scoreTeam1 || 0);
@@ -124,7 +130,7 @@ function Draw() {
                 value: Number(p.value) || 0,
             }));
 
-            const MAX_DIFFERENCE = matchDetails.gap;
+            const MAX_DIFFERENCE = Number(matchDetails.gapLimit) || 0;
             let bestTeam1 = [];
             let bestTeam2 = [];
             let bestDifference = Infinity;
@@ -161,10 +167,10 @@ function Draw() {
 
             return [bestTeam1, bestTeam2];
         },
-        [matchDetails.gap]
+        [matchDetails.gapLimit]
     );
 
-    // Generate teams FIXED
+    // Generate teams
     const generateTeams = useCallback(async () => {
         if (selectedPlayers.length < 2) {
             console.warn("Not enough players to generate teams");
@@ -173,6 +179,11 @@ function Draw() {
 
         const playersList = [...selectedPlayers];
         const [team1, team2] = generateBalancedTeams(playersList);
+
+        // Diff réelle de valeur entre les 2 équipes
+        const total1 = calculateTeamTotal(team1);
+        const total2 = calculateTeamTotal(team2);
+        const valueDifference = Math.abs(total1 - total2);
 
         setTeams([team1, team2]);
         setScoreTeam1(0);
@@ -185,7 +196,7 @@ function Draw() {
             const matchData = {
                 team1: team1.map((p) => ({
                     name: p.name,
-                    value: Number(p.value || 0).toFixed(2), // 2 digits en DB
+                    value: Number(p.value || 0).toFixed(2),
                 })),
                 team2: team2.map((p) => ({
                     name: p.name,
@@ -195,7 +206,8 @@ function Draw() {
                 startTime: matchDetails.startTime,
                 endTime: matchDetails.endTime,
                 location: matchDetails.location,
-                gap: Number(matchDetails.gap).toFixed(2),
+                gapLimit: Number(matchDetails.gapLimit).toFixed(2),
+                valueDifference: Number(valueDifference.toFixed(2)),
                 scoreTeam1: 0,
                 scoreTeam2: 0,
             };
@@ -311,7 +323,7 @@ function Draw() {
         setMatchDetails((prev) => {
             let newValue = value;
 
-            if (field === "gap") {
+            if (field === "gapLimit") {
                 const safe = (value ?? "").toString();
                 const numeric = parseFloat(safe.replace(",", ".")) || 0;
                 newValue = numeric.toFixed(2);

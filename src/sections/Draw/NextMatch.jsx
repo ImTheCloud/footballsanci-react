@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useRef } from "react";
 import "./styles/NextMatch.css";
 
 const LOCATIONS = ["Fit Five", "Halle"];
-const GAP_STEP = 0.1;
-const MIN_GAP = 0;
+const GAPLIMIT_STEP = 0.1;
+const MIN_GAPLIMIT = 0;
 
 const pad = (n) => String(n).padStart(2, "0");
 const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -24,14 +24,14 @@ const MatchInfoRow = ({ label, icon, children }) => (
     </div>
 );
 
-const GapControl = ({ value, onChange }) => (
-    <div className="gap-control">
+const GapLimitControl = ({ value, onChange }) => (
+    <div className="gapLimit-control">
         <button
             type="button"
-            aria-label="Decrease gap"
+            aria-label="Decrease gapLimit"
             onClick={() => {
                 const num = Number(value) || 0;
-                onChange(Math.max(MIN_GAP, +((num - GAP_STEP).toFixed(2))));
+                onChange(Math.max(MIN_GAPLIMIT, +((num - GAPLIMIT_STEP).toFixed(2))));
             }}
         >
             −
@@ -39,10 +39,10 @@ const GapControl = ({ value, onChange }) => (
         <span>{Number(value).toFixed(2)}</span>
         <button
             type="button"
-            aria-label="Increase gap"
+            aria-label="Increase gapLimit"
             onClick={() => {
                 const num = Number(value) || 0;
-                onChange(+((num + GAP_STEP).toFixed(2)));
+                onChange(+((num + GAPLIMIT_STEP).toFixed(2)));
             }}
         >
             +
@@ -78,7 +78,7 @@ const NextMatch = ({
         const current = matchDetails?.date;
         if (!current || current === today) onChange("date", nextSaturday);
         didInit.current = true;
-    }, []);
+    }, [matchDetails, today, nextSaturday, onChange]);
 
     return (
         <MatchBox title="Next Match">
@@ -119,10 +119,10 @@ const NextMatch = ({
                 </select>
             </MatchInfoRow>
 
-            <MatchInfoRow label="Gap" icon="↔️">
-                <GapControl
-                    value={matchDetails.gap}
-                    onChange={(v) => onChange("gap", v)}
+            <MatchInfoRow label="Gap limit" icon="↔️">
+                <GapLimitControl
+                    value={matchDetails.gapLimit}
+                    onChange={(v) => onChange("gapLimit", v)}
                 />
             </MatchInfoRow>
 

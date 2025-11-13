@@ -110,15 +110,15 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* Gap control adjustments: align minus button to the left, plus button to the right,
+/* GapLimit control adjustments: align minus button to the left, plus button to the right,
    and centre the value between them. */
-.gap-control {
+.gapLimit-control {
     flex: 1;
     display: flex;
     align-items: center;
 }
 
-.gap-control button {
+.gapLimit-control button {
     width: 32px;
     height: 32px;
     border-radius: 6px;
@@ -135,17 +135,17 @@
     line-height: 1;
 }
 
-.gap-control button:hover {
+.gapLimit-control button:hover {
     background: rgba(6, 78, 59, 0.5);
     border-color: rgba(16, 185, 129, 0.7);
 }
 
-.gap-control button:active {
+.gapLimit-control button:active {
     transform: scale(0.95);
 }
 
 /* The value display expands to fill available space and centres its text */
-.gap-control span {
+.gapLimit-control span {
     flex: 1;
     color: rgba(255, 255, 255, 0.95);
     font-weight: 600;
@@ -154,11 +154,11 @@
     text-align: center;
 }
 
-.gap-control button:first-child {
+.gapLimit-control button:first-child {
     margin-right: 0;
 }
 
-.gap-control button:last-child {
+.gapLimit-control button:last-child {
     margin-left: 0;
 }
 
