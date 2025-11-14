@@ -108,10 +108,7 @@ const css = {
         gap: "14px",
         padding: "10px 32px",
         minWidth: "max-content",
-        borderRadius: "22px",
         backdropFilter: "blur(6px)",
-        background: "rgba(0,0,0,0.35)",
-        border: "1px solid rgba(255,255,255,0.22)",
         animation: "fadeOnly 0.9s ease-out"
     },
 

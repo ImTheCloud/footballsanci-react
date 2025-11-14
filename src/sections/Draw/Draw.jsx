@@ -334,12 +334,7 @@ function Draw() {
 
     if (loading) {
         return (
-            <div className="draw-container">
-                <div className="loading-state">
-                    <div className="loading-spinner" />
-                    <p>Loading...</p>
-                </div>
-            </div>
+            <div className="draw-container"></div>
         );
     }
 
