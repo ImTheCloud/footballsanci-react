@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSeason } from "./SeasonContext.jsx";
 
 function Header() {
     const { seasons, selectedSeason, setSelectedSeason, loadingSeasons } = useSeason();
     const [activeSection, setActiveSection] = useState("ranking");
+    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+    const lastScrollYRef = useRef(0);
 
     const sections = ["ranking", "draw", "history"];
 
@@ -18,7 +20,28 @@ function Header() {
 
     useEffect(() => {
         const onScroll = () => {
-            const pos = window.scrollY + 80;
+            const currentY =
+                window.scrollY ||
+                window.pageYOffset ||
+                document.documentElement.scrollTop ||
+                document.body.scrollTop ||
+                0;
+
+            // Ignore tiny scroll changes to avoid flicker, especially on mobile
+            if (Math.abs(currentY - lastScrollYRef.current) < 5) {
+                return;
+            }
+
+            // Hide header when scrolling down, show when scrolling up or near top
+            if (currentY > lastScrollYRef.current && currentY > 80) {
+                setIsHeaderVisible(false);
+            } else {
+                setIsHeaderVisible(true);
+            }
+            lastScrollYRef.current = currentY;
+
+            // Update active section
+            const pos = currentY + 80;
             for (let i = sections.length - 1; i >= 0; i--) {
                 const s = document.getElementById(sections[i]);
                 if (s && pos >= s.offsetTop) {
@@ -27,7 +50,7 @@ function Header() {
                 }
             }
         };
-        window.addEventListener("scroll", onScroll);
+        window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
@@ -39,7 +62,12 @@ function Header() {
     const seasonReady = !loadingSeasons && !!selectedSeason && seasons.length > 0;
 
     return (
-        <header style={styles.header}>
+        <header
+            style={{
+                ...styles.header,
+                transform: isHeaderVisible ? "translateY(0)" : "translateY(-100%)",
+            }}
+        >
             {/* LEFT: Season selector */}
             <div style={styles.left}>
                 {seasonReady ? (
@@ -95,6 +123,8 @@ const styles = {
         backdropFilter: "blur(12px)",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
         zIndex: 1000,
+        transform: "translateY(0)",
+        transition: "transform 0.25s ease, background 0.2s ease",
     },
     left: {
         display: "flex",
