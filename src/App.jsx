@@ -10,6 +10,8 @@ import Ranking from "./sections/Ranking/Ranking.jsx";
 import Draw from "./sections/Draw/Draw.jsx";
 import History from "./sections/History";
 
+import FootballTips from "./components/FootballTips.jsx";  
+
 function App() {
     return (
         <AuthProvider>
@@ -22,6 +24,10 @@ function App() {
                     <section id="ranking"><Ranking /></section>
                     <section id="draw"><Draw /></section>
                     <section id="history"><History /></section>
+
+                    <section id="football-tips">
+                        <FootballTips />
+                    </section>
                 </main>
 
                 <Footer />
