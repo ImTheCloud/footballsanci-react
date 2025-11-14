@@ -116,7 +116,7 @@ const styles = {
         background: "transparent",
         border: "none",
         outline: "none",
-        fontSize: "var(--font-normal)",
+        fontSize: "var(--font-large)",
         fontWeight: 500,
         lineHeight: 1.2,
         cursor: "pointer",
@@ -134,13 +134,13 @@ const styles = {
     option: {
         color: "#000",
         backgroundColor: "#fff",
-        fontSize: "var(--font-normal)",
+        fontSize: "var(--font-large)",
     },
 
     seasonPlaceholder: {
         flex: "0 0 auto",
         padding: "8px 22px 8px 6px",
-        fontSize: "var(--font-normal)",
+        fontSize: "var(--font-large)",
         fontWeight: 500,
         lineHeight: 1.2,
         color: "#fff",
@@ -155,7 +155,7 @@ const styles = {
         cursor: "pointer",
         opacity: 0.8,
         letterSpacing: "0.5px",
-        fontSize: "var(--font-normal)",
+        fontSize: "var(--font-large)",
         fontWeight: 500,
         padding: "4px 6px",
         whiteSpace: "nowrap",
