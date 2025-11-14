@@ -36,20 +36,39 @@ export default function FootballTip() {
         "Close passing lanes with small steps so attackers lose rhythm and creativity."
     ];
 
+    // Mélanger un tableau (Fisher–Yates)
+    const shuffleArray = (array) => {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    };
+
+    const [pool, setPool] = useState(shuffleArray(tips)); // liste mélangée
     const [index, setIndex] = useState(0);
     const [fade, setFade] = useState(true);
 
     useEffect(() => {
         const interval = setInterval(() => {
             setFade(false);
+
             setTimeout(() => {
-                setIndex((prev) => (prev + 1) % tips.length);
+                // Si on arrive à la fin → remélange et reset l’index
+                if (index === pool.length - 1) {
+                    setPool(shuffleArray(tips));
+                    setIndex(0);
+                } else {
+                    setIndex(index + 1);
+                }
+
                 setFade(true);
             }, 450);
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [tips.length]);
+    }, [index, pool, tips]);
 
     const style = {
         marginTop: "40px",
@@ -59,17 +78,14 @@ export default function FootballTip() {
         color: "white",
         fontSize: "var(--font-small)",
         lineHeight: "1.35",
-
         maxWidth: "85vw",
         marginLeft: "auto",
         marginRight: "auto",
         height: "2.7em",
         overflow: "hidden",
-
         opacity: fade ? 1 : 0,
         transform: fade ? "translateY(0px)" : "translateY(4px)",
         transition: "opacity 0.45s ease, transform 0.45s ease",
-
         textShadow: fade
             ? "0 0 8px rgba(16,185,129,0.35), 0 0 12px rgba(16,185,129,0.25)"
             : "none"
@@ -77,7 +93,7 @@ export default function FootballTip() {
 
     return (
         <div style={style}>
-            ⚽ {tips[index]}
+            ⚽ {pool[index]}
         </div>
     );
 }
