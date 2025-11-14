@@ -203,8 +203,8 @@ const LiveDraw = ({
 
     // ✅ Totaux venant direct de Firestore
     const teamTotalsFromDb = [
-        matchData?.team1Total,
-        matchData?.team2Total,
+        matchData?.team1TotalValue,
+        matchData?.team2TotalValue,
     ];
 
     return (
