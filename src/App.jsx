@@ -11,11 +11,14 @@ import Draw from "./sections/Draw/Draw.jsx";
 import History from "./sections/History";
 
 import FootballTips from "./components/FootballTips.jsx";
+import AccessCodeGate from "./components/AccessCodeGate.jsx";
 
 function App() {
     return (
         <AuthProvider>
             <SeasonProvider>
+
+                <AccessCodeGate />
 
                 <Header />
                 <SeasonBanner />
