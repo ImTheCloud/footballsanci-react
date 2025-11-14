@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import './styles/LiveDraw.css';
 
-// Compute the total value of a team based on its players.
+// Compute the total value of a team based on its players (fallback only).
 const calculateTeamTotal = (team) =>
     team.reduce((sum, player) => sum + (Number(player.value) || 0), 0);
 
@@ -131,10 +131,12 @@ const MatchInfoDisplay = ({ matchData, Timer }) => {
     );
 };
 
-// ---------------------------- Reste identique ----------------------------
+// ---------------------------- Teams & Score ----------------------------
 
-const TeamCard = ({ team, index }) => {
-    const teamTotal = useMemo(() => calculateTeamTotal(team), [team]);
+const TeamCard = ({ team, index, total }) => {
+    // ✅ On privilégie la valeur venant de Firestore, fallback local si manquante
+    const teamTotal = total != null ? Number(total) : calculateTeamTotal(team);
+
     return (
         <div className={`team-card team-${index + 1}`}>
             <div className="team-header">
@@ -199,12 +201,23 @@ const LiveDraw = ({
                   }) => {
     const Timer = useMatchTimer(matchData || {});
 
+    // ✅ Totaux venant direct de Firestore
+    const teamTotalsFromDb = [
+        matchData?.team1Total,
+        matchData?.team2Total,
+    ];
+
     return (
         <div className="teams-wrapper">
             <MatchInfoDisplay matchData={matchData} Timer={Timer} />
             <div className="teams-container">
                 {teams.map((team, index) => (
-                    <TeamCard key={index} team={team} index={index} />
+                    <TeamCard
+                        key={index}
+                        team={team}
+                        index={index}
+                        total={teamTotalsFromDb[index]}
+                    />
                 ))}
             </div>
             {currentUser && (

@@ -94,8 +94,22 @@ function Draw() {
 
             if (liveSnapshot.exists()) {
                 const data = liveSnapshot.data();
+
+                // compat ancien champ
                 if (data.gapLimit === undefined && data.gap !== undefined) {
                     data.gapLimit = data.gap;
+                }
+
+                // ✅ s'assurer qu'on a bien les totaux dans les données venant de Firestore
+                if (data.team1 && data.team2) {
+                    if (data.team1Total === undefined) {
+                        const t1 = calculateTeamTotal(data.team1);
+                        data.team1Total = Number(t1.toFixed(2));
+                    }
+                    if (data.team2Total === undefined) {
+                        const t2 = calculateTeamTotal(data.team2);
+                        data.team2Total = Number(t2.toFixed(2));
+                    }
                 }
 
                 setTeams([data.team1, data.team2]);
@@ -223,6 +237,9 @@ function Draw() {
                     name: p.name,
                     value: Number(p.value || 0).toFixed(2),
                 })),
+                // ✅ stocker les totaux d'équipe dans Firestore
+                team1Total: Number(total1.toFixed(2)),
+                team2Total: Number(total2.toFixed(2)),
                 date: formattedDate,
                 startTime: matchDetails.startTime,
                 endTime: matchDetails.endTime,
@@ -261,6 +278,7 @@ function Draw() {
             const formattedDate = liveMatch.date;
             const matchRef = doc(db, `seasons/${selectedSeason}/matches/${formattedDate}`);
 
+            // ✅ les champs team1Total / team2Total sont déjà dans liveMatch → recopiés tels quels
             const finalData = {
                 ...liveMatch,
                 scoreTeam1,
