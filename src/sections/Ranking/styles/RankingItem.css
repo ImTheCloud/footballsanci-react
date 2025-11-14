@@ -200,28 +200,20 @@
     padding: 0;
     display: inline-block;
 }
-
 .player-fame.scrolling {
-    animation: scroll-text 12s ease-in-out infinite;
+    animation: scroll-text 15s linear infinite;
 }
 
 @keyframes scroll-text {
-    0%,
-    15% {
+    0% {
         transform: translateX(0);
     }
     50% {
         transform: translateX(calc(-100% + var(--container-width)));
     }
-    65%,
     100% {
         transform: translateX(0);
     }
-}
-
-.player-fame-container:hover .player-fame.scrolling,
-.player-fame-container:focus-within .player-fame.scrolling {
-    animation-play-state: paused;
 }
 
 /* Fame input */
@@ -245,6 +237,15 @@
 
 .fame-input::placeholder {
     color: rgba(255, 255, 255, 0.4);
+}
+
+/* Fame en mode expanded : plein largeur au-dessus des stats */
+.ranking-fame-expanded {
+    margin-top: 0.35rem;
+}
+
+.ranking-fame-expanded .player-fame-container {
+    max-width: 100%;
 }
 
 /* ==========================================================================

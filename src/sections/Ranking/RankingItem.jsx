@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import "./styles/RankingItem.css";
 import RankingDetails from "./RankingDetails.jsx";
 
@@ -20,11 +20,12 @@ const FameDisplay = ({ playerId, fame, currentUser, onUpdate }) => {
     const textRef = useRef(null);
     const [isOverflowing, setIsOverflowing] = useState(false);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const checkOverflow = () => {
             if (containerRef.current && textRef.current) {
                 const overflow =
                     textRef.current.scrollWidth > containerRef.current.offsetWidth;
+
                 setIsOverflowing(overflow);
 
                 if (overflow) {
@@ -32,6 +33,11 @@ const FameDisplay = ({ playerId, fame, currentUser, onUpdate }) => {
                         "--container-width",
                         `${containerRef.current.offsetWidth}px`
                     );
+                    // Reset animation pour repartir au début du cycle
+                    textRef.current.style.animation = "none";
+                    requestAnimationFrame(() => {
+                        textRef.current.style.animation = "";
+                    });
                 }
             }
         };
@@ -40,6 +46,16 @@ const FameDisplay = ({ playerId, fame, currentUser, onUpdate }) => {
         window.addEventListener("resize", checkOverflow);
         return () => window.removeEventListener("resize", checkOverflow);
     }, [fame]);
+
+    // Texte affiché : espaces seulement si ça scroll (overflow)
+    const renderFame = () => {
+        if (!fame) return "";
+        if (isOverflowing) {
+            // 2 espaces insécables avant/après pour ne pas être compressés
+            return `\u00A0\u00A0${fame}\u00A0\u00A0`;
+        }
+        return fame;
+    };
 
     return (
         <div className="player-fame-container" ref={containerRef}>
@@ -60,7 +76,7 @@ const FameDisplay = ({ playerId, fame, currentUser, onUpdate }) => {
                             isOverflowing ? "scrolling" : ""
                         }`}
                     >
-                        {fame}
+                        {renderFame()}
                     </p>
                 )
             )}
@@ -99,7 +115,6 @@ const RankingItem = ({
                          statsConfig,
                      }) => {
     const handleClick = (e) => {
-        // On ignore les clics sur les contrôles + / - et input fame
         if (!e.target.closest(".stat-controls") && !e.target.closest(".fame-input")) {
             onToggle(player.id);
         }
@@ -112,15 +127,21 @@ const RankingItem = ({
             }`}
             onClick={handleClick}
         >
+            {/* Ligne principale compacte */}
             <div className="ranking-item-main">
                 <RankBadge rank={rank} />
                 <PlayerInfo name={player.name} />
-                <FameDisplay
-                    playerId={player.id}
-                    fame={player.fame}
-                    currentUser={currentUser}
-                    onUpdate={onUpdateFame}
-                />
+
+                {/* Fame en mode compact : seulement quand PAS expanded */}
+                {!isExpanded && (
+                    <FameDisplay
+                        playerId={player.id}
+                        fame={player.fame}
+                        currentUser={currentUser}
+                        onUpdate={onUpdateFame}
+                    />
+                )}
+
                 <PlayerPoints
                     points={player.points}
                     value={player.value}
@@ -128,13 +149,25 @@ const RankingItem = ({
                 />
             </div>
 
+            {/* Quand expanded : Fame large au-dessus des détails */}
             {isExpanded && (
-                <RankingDetails
-                    player={player}
-                    currentUser={currentUser}
-                    onUpdateField={onUpdateField}
-                    statsConfig={statsConfig}
-                />
+                <>
+                    <div className="ranking-fame-expanded">
+                        <FameDisplay
+                            playerId={player.id}
+                            fame={player.fame}
+                            currentUser={currentUser}
+                            onUpdate={onUpdateFame}
+                        />
+                    </div>
+
+                    <RankingDetails
+                        player={player}
+                        currentUser={currentUser}
+                        onUpdateField={onUpdateField}
+                        statsConfig={statsConfig}
+                    />
+                </>
             )}
         </div>
     );
