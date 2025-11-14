@@ -84,7 +84,7 @@ function Header() {
                     </select>
                 ) : (
                     <div style={styles.seasonPlaceholder}>
-                        Season…
+                        Season 6
                     </div>
                 )}
             </div>
