@@ -78,10 +78,6 @@ export default function SeasonBanner_Enhanced() {
         </>
     );
 }
-
-/* -------------------------------------------
-   CLEAN CSS-in-JS — uses your global font sizes
--------------------------------------------- */
 const css = {
     container: {
         position: "relative",

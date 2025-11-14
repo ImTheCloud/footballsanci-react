@@ -9,6 +9,12 @@ import NextMatch from "./NextMatch.jsx";
 import Players from "./Players.jsx";
 import LiveDraw from "./LiveDraw.jsx";
 
+// 🔥 Convert "Season 6" → 6
+function extractSeasonNumber(label) {
+    const match = label?.match(/\d+/);
+    return match ? Number(match[0]) : NaN;
+}
+
 // Etat initial du match
 const INITIAL_MATCH_DETAILS = {
     date: new Date().toISOString().split("T")[0],
@@ -50,17 +56,36 @@ function Draw() {
     // LOAD
     const fetchData = useCallback(async () => {
         if (!selectedSeason) return;
-
         setLoading(true);
+
         try {
             if (currentUser) {
+
+                // 🔥 Load all seasons & extract numbers from labels like "Season 6"
+                const seasonSnapshot = await getDocs(collection(db, "seasons"));
+
+                const seasonNumbers = seasonSnapshot.docs
+                    .map((d) => extractSeasonNumber(d.id))   // "Season 6" → 6
+                    .filter((n) => !isNaN(n))
+                    .sort((a, b) => a - b);
+
+                const LAST_SEASON = seasonNumbers[seasonNumbers.length - 1];
+                const selectedNum = extractSeasonNumber(selectedSeason);
+
+                // 🔥 Si on sélectionne la dernière → charger celle d'avant
+                const seasonToLoad =
+                    selectedNum === LAST_SEASON ? LAST_SEASON - 1 : selectedNum;
+
+                // Charger les joueurs
                 const playersSnapshot = await getDocs(
-                    collection(db, `seasons/${selectedSeason}/players`)
+                    collection(db, `seasons/Season ${seasonToLoad}/players`)
                 );
+
                 const playersList = playersSnapshot.docs.map((docSnap) => ({
                     id: docSnap.id,
                     ...docSnap.data(),
                 }));
+
                 setPlayers(playersList);
             }
 
@@ -69,8 +94,6 @@ function Draw() {
 
             if (liveSnapshot.exists()) {
                 const data = liveSnapshot.data();
-
-                // Fallback ancien champ "gap"
                 if (data.gapLimit === undefined && data.gap !== undefined) {
                     data.gapLimit = data.gap;
                 }
@@ -159,7 +182,6 @@ function Draw() {
                 }
             }
 
-            // FAILSAFE ANTI-EMPTY TEAMS
             if (bestTeam1.length === 0 || bestTeam2.length === 0) {
                 const half = Math.ceil(safePlayers.length / 2);
                 return [safePlayers.slice(0, half), safePlayers.slice(half)];
@@ -180,7 +202,6 @@ function Draw() {
         const playersList = [...selectedPlayers];
         const [team1, team2] = generateBalancedTeams(playersList);
 
-        // Diff réelle de valeur entre les 2 équipes
         const total1 = calculateTeamTotal(team1);
         const total2 = calculateTeamTotal(team2);
         const valueDifference = Math.abs(total1 - total2);
