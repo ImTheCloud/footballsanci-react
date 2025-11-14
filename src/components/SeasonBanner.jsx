@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { storage } from "../services/firebase";
-import { ref, getDownloadURL } from "firebase/storage";
+import { ref, getDownloadURL, listAll } from "firebase/storage";
 import { useSeason } from "./SeasonContext.jsx";
 
 export default function SeasonBanner_Enhanced() {
@@ -20,9 +20,25 @@ export default function SeasonBanner_Enhanced() {
     useEffect(() => {
         (async () => {
             try {
-                const url = await getDownloadURL(ref(storage, `seasons/${selectedSeason}.jpg`));
+                // 1. Vérifier quels fichiers existent
+                const folderRef = ref(storage, "seasons");
+                const list = await listAll(folderRef);
+
+                // 2. Vérifier si la photo de la saison existe
+                const fileName = `${selectedSeason}.jpg`;
+                const fileExists = list.items.some(item => item.name === fileName);
+
+                if (!fileExists) {
+                    setImageUrl(null);
+                    return;
+                }
+
+                // 3. Charger seulement si le fichier existe
+                const url = await getDownloadURL(ref(storage, `seasons/${fileName}`));
                 setImageUrl(url);
-            } catch {
+
+            } catch (err) {
+                console.warn("Unexpected Firebase error:", err);
                 setImageUrl(null);
             }
         })();
