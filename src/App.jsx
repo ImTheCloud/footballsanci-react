@@ -4,7 +4,6 @@ import { SeasonProvider } from "./components/SeasonContext.jsx";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import ScrollToTopButton from "./components/ScrollToTopButton";
 import SeasonBanner from "./components/SeasonBanner.jsx";
 
 import Ranking from "./sections/Ranking/Ranking.jsx";
@@ -26,7 +25,6 @@ function App() {
                 </main>
 
                 <Footer />
-                <ScrollToTopButton />
 
             </SeasonProvider>
         </AuthProvider>
