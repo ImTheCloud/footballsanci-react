@@ -40,12 +40,12 @@ const useMatchTimer = (matchData) => {
     if (!start || !end) return { phase: 'invalid', text: '—' };
     if (now < start.getTime()) return { phase: 'before', text: `${formatDuration(start.getTime() - now)}` };
     if (now >= start.getTime() && now < end.getTime()) return { phase: 'during', text: `${formatDuration(end.getTime() - now)}` };
-    return { phase: 'after', text: 'finished' };
+    return { phase: 'after', text: 'Finished' };
 };
 
 /* --------------------------- Match Info component -------------------------- */
 
-const MatchInfoDisplay = ({ matchData, Timer }) => {
+const MatchInfoDisplay = ({ matchData, Timer, teamTotals }) => {
     if (!matchData) {
         return (
             <div className="match-details-card">
@@ -64,6 +64,9 @@ const MatchInfoDisplay = ({ matchData, Timer }) => {
         matchData.valueDifference !== undefined
             ? Number(matchData.valueDifference).toFixed(2)
             : '—';
+
+    const team1Total = teamTotals?.[0];
+    const team2Total = teamTotals?.[1];
 
     return (
         <div className="match-details-card">
@@ -90,24 +93,6 @@ const MatchInfoDisplay = ({ matchData, Timer }) => {
                     </div>
                 </div>
 
-                {/* Gap limit */}
-                <div className="match-details-item">
-                    <span className="match-details-icon">📏</span>
-                    <div className="match-details-text">
-                        <span className="match-details-label">Gap limit</span>
-                        <span className="match-details-value">{matchData.gapLimit}</span>
-                    </div>
-                </div>
-
-                {/* Value diff */}
-                <div className="match-details-item">
-                    <span className="match-details-icon">↔️</span>
-                    <div className="match-details-text">
-                        <span className="match-details-label">Value diff</span>
-                        <span className="match-details-value">{diff}</span>
-                    </div>
-                </div>
-
                 {/* Date */}
                 <div className="match-details-item">
                     <span className="match-details-icon">📅</span>
@@ -126,6 +111,43 @@ const MatchInfoDisplay = ({ matchData, Timer }) => {
                     </div>
                 </div>
 
+                {/* Gap limit */}
+                <div className="match-details-item">
+                    <span className="match-details-icon">📏</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Gap limit</span>
+                        <span className="match-details-value">{matchData.gapLimit}</span>
+                    </div>
+                </div>
+
+                {/* Value diff */}
+                <div className="match-details-item">
+                    <span className="match-details-icon">↔️</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Value diff</span>
+                        <span className="match-details-value">{diff}</span>
+                    </div>
+                </div>
+
+                <div className="match-details-item">
+                    <span className="match-details-icon">🔵</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Value T1</span>
+                        <span className="match-details-value">
+                            {team1Total != null ? team1Total.toFixed(2) : '—'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="match-details-item">
+                    <span className="match-details-icon">🔴</span>
+                    <div className="match-details-text">
+                        <span className="match-details-label">Value T2</span>
+                        <span className="match-details-value">
+                            {team2Total != null ? team2Total.toFixed(2) : '—'}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -133,15 +155,11 @@ const MatchInfoDisplay = ({ matchData, Timer }) => {
 
 // ---------------------------- Teams & Score ----------------------------
 
-const TeamCard = ({ team, index, total }) => {
-    // ✅ On privilégie la valeur venant de Firestore, fallback local si manquante
-    const teamTotal = total != null ? Number(total) : calculateTeamTotal(team);
-
+const TeamCard = ({ team, index }) => {
     return (
         <div className={`team-card team-${index + 1}`}>
             <div className="team-header">
                 <h3 className="team-title">Team {index + 1}</h3>
-                <div className="team-total">{teamTotal.toFixed(2)}</div>
             </div>
             <ul className="team-players">
                 {team.map((player) => (
@@ -201,22 +219,26 @@ const LiveDraw = ({
                   }) => {
     const Timer = useMatchTimer(matchData || {});
 
-    // ✅ Totaux venant direct de Firestore
-    const teamTotalsFromDb = [
-        matchData?.team1TotalValue,
-        matchData?.team2TotalValue,
+    // ✅ Totaux: priorité à Firestore, sinon fallback calcul local
+    const fallbackTotals = useMemo(
+        () => teams.map((t) => calculateTeamTotal(t)),
+        [teams]
+    );
+
+    const teamTotals = [
+        matchData?.team1TotalValue ?? fallbackTotals[0],
+        matchData?.team2TotalValue ?? fallbackTotals[1],
     ];
 
     return (
         <div className="teams-wrapper">
-            <MatchInfoDisplay matchData={matchData} Timer={Timer} />
+            <MatchInfoDisplay matchData={matchData} Timer={Timer} teamTotals={teamTotals} />
             <div className="teams-container">
                 {teams.map((team, index) => (
                     <TeamCard
                         key={index}
                         team={team}
                         index={index}
-                        total={teamTotalsFromDb[index]}
                     />
                 ))}
             </div>
