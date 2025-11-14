@@ -33,7 +33,7 @@ html, body {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 2px;
-    background: linear-gradient(135deg, rgba(16,185,129,1), rgba(6,78,59,1));
+    background: linear-gradient(135deg, rgb(173, 184, 180), rgba(6,78,59,1));
     -webkit-background-clip: text;
     color: transparent;
     text-shadow: 0 0 20px rgba(16,185,129,0.5);
