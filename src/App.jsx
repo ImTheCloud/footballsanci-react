@@ -5,6 +5,7 @@ import { SeasonProvider } from "./components/SeasonContext.jsx";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTopButton from "./components/ScrollToTopButton";
+import SeasonBanner from "./components/SeasonBanner.jsx";
 
 import Ranking from "./sections/Ranking/Ranking.jsx";
 import Draw from "./sections/Draw/Draw.jsx";
@@ -16,15 +17,15 @@ function App() {
             <SeasonProvider>
 
                 <Header />
+                <SeasonBanner />
 
-                <main >
+                <main style={{ position: "relative", zIndex: 1 }}>
                     <section id="ranking"><Ranking /></section>
                     <section id="draw"><Draw /></section>
                     <section id="history"><History /></section>
                 </main>
 
                 <Footer />
-
                 <ScrollToTopButton />
 
             </SeasonProvider>

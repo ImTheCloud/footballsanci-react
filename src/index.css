@@ -27,10 +27,6 @@ html, body {
     min-height: 100%;
 }
 
-main {
-    margin-top: 40px;
-}
-
 .section-title {
     font-size: 3rem;
     text-align: center;
@@ -42,3 +38,4 @@ main {
     color: transparent;
     text-shadow: 0 0 20px rgba(16,185,129,0.5);
 }
+

@@ -8,7 +8,7 @@ const firebaseConfig = {
     authDomain: "footballsanci.firebaseapp.com",
     databaseURL: "https://footballsanci-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "footballsanci",
-    storageBucket: "footballsanci.appspot.com",
+    storageBucket: "footballsanci.firebasestorage.app",
     messagingSenderId: "108108129157",
     appId: "1:108108129157:web:c881c7b4d787677c43daec",
     measurementId: "G-VESXDYD12H",
