@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 
-// Bump this key when you want to force all devices to enter the access code again
-const ACCESS_KEY = "fs_access_code_ok_v3";
+// Exported so App can reuse same key
+export const ACCESS_KEY = "fs_access_code_ok_v4";
 
 async function hashCode(value) {
     const encoder = new TextEncoder();
@@ -13,27 +13,16 @@ async function hashCode(value) {
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export default function AccessCodeGate() {
-    const [visible, setVisible] = useState(false);
+export default function AccessCodeGate({ onUnlock }) {
     const [code, setCode] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [expectedHash, setExpectedHash] = useState(null);
     const [configLoading, setConfigLoading] = useState(true);
 
+    // Load expected hash from Firestore
     useEffect(() => {
         const init = async () => {
-            // Local access gate: show the modal if we do not have the local flag
-            try {
-                const stored = localStorage.getItem(ACCESS_KEY);
-                if (!stored) {
-                    setVisible(true);
-                }
-            } catch {
-                setVisible(true);
-            }
-
-            // Fetch expected hash from Firestore
             try {
                 const snap = await getDoc(doc(db, "access", "hash"));
                 if (snap.exists()) {
@@ -41,7 +30,6 @@ export default function AccessCodeGate() {
                     if (data && data.hash) {
                         setExpectedHash(String(data.hash));
                     } else if (data && data.code) {
-                        // Fallback: if a plain code is stored, hash it once on the client
                         const hashed = await hashCode(String(data.code));
                         setExpectedHash(hashed);
                     }
@@ -57,8 +45,6 @@ export default function AccessCodeGate() {
 
         init();
     }, []);
-
-    if (!visible) return null;
 
     const handleSubmit = async () => {
         setError("");
@@ -78,9 +64,9 @@ export default function AccessCodeGate() {
                 } catch {
                     // If localStorage is not available, still allow access
                 }
-                setVisible(false);
                 setCode("");
                 setError("");
+                if (onUnlock) onUnlock();
             } else {
                 setError("Incorrect code. Please contact the manager.");
             }
@@ -96,8 +82,8 @@ export default function AccessCodeGate() {
     };
 
     return (
-        <div style={styles.overlay}>
-            <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div style={styles.page}>
+            <div style={styles.modal}>
                 <div style={styles.modalHeader}>
                     <h2 style={styles.title}>Team Access</h2>
                     <p style={styles.subtitle}>
@@ -137,8 +123,8 @@ export default function AccessCodeGate() {
                         {configLoading
                             ? "Loading access..."
                             : loading
-                            ? "Checking..."
-                            : "Enter"}
+                                ? "Checking..."
+                                : "Enter"}
                     </button>
                 </div>
             </div>
@@ -147,15 +133,17 @@ export default function AccessCodeGate() {
 }
 
 const styles = {
-    overlay: {
-        position: "fixed",
-        inset: 0,
-        backgroundColor: "rgba(0,0,0,0.9)",
-        backdropFilter: "blur(8px)",
+    page: {
+        minHeight: "100vh",
+        width: "100%",
+        maxWidth: "100%",
+        boxSizing: "border-box",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 2500,
+        backgroundColor: "#000", // écran complètement noir
+        padding: "16px",
+        overflowX: "hidden",
     },
     modal: {
         background: "rgba(10,10,10,0.96)",
