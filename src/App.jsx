@@ -8,7 +8,7 @@ import SeasonBanner from "./components/SeasonBanner.jsx";
 
 import Ranking from "./sections/Ranking/Ranking.jsx";
 import Draw from "./sections/Draw/Draw.jsx";
-import History from "./sections/History";
+import History from "./sections/History/History.jsx";
 
 import FootballTips from "./components/FootballTips.jsx";
 import AccessCodeGate, { ACCESS_KEY } from "./components/AccessCodeGate.jsx";
