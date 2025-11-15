@@ -21,7 +21,7 @@ const INITIAL_MATCH_DETAILS = {
     startTime: "21:00",
     endTime: "22:00",
     location: "Fit Five",
-    gapLimit: 1.0,
+    gapLimit: 1.5,
 };
 
 // Formatage JJ-MM-AAAA
@@ -60,31 +60,84 @@ function Draw() {
 
         try {
             if (currentUser) {
-
-                // 🔥 Load all seasons & extract numbers from labels like "Season 6"
-                const seasonSnapshot = await getDocs(collection(db, "seasons"));
-
-                const seasonNumbers = seasonSnapshot.docs
-                    .map((d) => extractSeasonNumber(d.id))   // "Season 6" → 6
-                    .filter((n) => !isNaN(n))
-                    .sort((a, b) => a - b);
-
-                const LAST_SEASON = seasonNumbers[seasonNumbers.length - 1];
                 const selectedNum = extractSeasonNumber(selectedSeason);
+                const prevSeasonNum = selectedNum - 1;
 
-                // 🔥 Si on sélectionne la dernière → charger celle d'avant
-                const seasonToLoad =
-                    selectedNum === LAST_SEASON ? LAST_SEASON - 1 : selectedNum;
+                const loadSeasonPlayers = async (seasonNum) => {
+                    if (!Number.isFinite(seasonNum) || seasonNum <= 0) return [];
+                    const snap = await getDocs(
+                        collection(db, `seasons/Season ${seasonNum}/players`)
+                    );
+                    return snap.docs.map((docSnap) => ({
+                        id: docSnap.id,
+                        ...docSnap.data(),
+                    }));
+                };
 
-                // Charger les joueurs
-                const playersSnapshot = await getDocs(
-                    collection(db, `seasons/Season ${seasonToLoad}/players`)
-                );
+                const byId = {};
 
-                const playersList = playersSnapshot.docs.map((docSnap) => ({
-                    id: docSnap.id,
-                    ...docSnap.data(),
-                }));
+                // 🔹 Saison précédente
+                const prevPlayers = await loadSeasonPlayers(prevSeasonNum);
+                prevPlayers.forEach((p) => {
+                    const prevVal = Number(p.value || 0) || 0;
+                    const id = p.id;
+                    if (!byId[id]) {
+                        byId[id] = {
+                            ...p,
+                            valuePrev: prevVal,
+                            valueCurr: null,
+                        };
+                    } else {
+                        byId[id] = {
+                            ...byId[id],
+                            ...p,
+                            valuePrev: prevVal,
+                        };
+                    }
+                });
+
+                // 🔹 Saison en cours
+                const currentPlayers = await loadSeasonPlayers(selectedNum);
+                currentPlayers.forEach((p) => {
+                    const currVal = Number(p.value || 0) || 0;
+                    const id = p.id;
+                    if (!byId[id]) {
+                        byId[id] = {
+                            ...p,
+                            valuePrev: null,
+                            valueCurr: currVal,
+                        };
+                    } else {
+                        byId[id] = {
+                            ...byId[id],
+                            ...p,
+                            valueCurr: currVal,
+                        };
+                    }
+                });
+
+                // 🔹 Combiner les valeurs (moyenne si saison précédente + saison en cours)
+                const playersList = Object.values(byId).map((p) => {
+                    const prev = p.valuePrev;
+                    const curr = p.valueCurr;
+                    let combined;
+
+                    if (prev != null && curr != null) {
+                        combined = (prev + curr) / 2; // moyenne des 2 saisons, reste sur 10
+                    } else if (curr != null) {
+                        combined = curr; // seulement saison en cours
+                    } else if (prev != null) {
+                        combined = prev; // seulement saison précédente
+                    } else {
+                        combined = 0;
+                    }
+
+                    const { valuePrev: VALUE_PREV, valueCurr: VALUE_CURR, ...rest } = p;
+                    return {
+                        ...rest,
+                        value: Number(combined.toFixed(2)),
+                    };
+                });
 
                 setPlayers(playersList);
             }

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import "./styles/NextMatch.css";
 
-const LOCATIONS = ["Fit Five", "Halle"];
+const LOCATIONS = ["Fit Five", "Halle","Veeweyde"];
 const GAPLIMIT_STEP = 0.1;
 const MIN_GAPLIMIT = 0;
 
@@ -10,7 +10,15 @@ const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDat
 const getTodayISO = () => toISO(new Date());
 const getNextSaturdayISO = () => {
     const t = new Date();
-    const diff = ((6 - t.getDay()) % 7) || 7;
+    const day = t.getDay();
+
+    // If today is Saturday (6), use today's date
+    if (day === 6) {
+        return toISO(t);
+    }
+
+    // Otherwise, go to the upcoming Saturday of this week
+    const diff = 6 - day; // 0–6 days ahead
     const d = new Date(t);
     d.setDate(t.getDate() + diff);
     return toISO(d);
